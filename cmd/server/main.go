@@ -13,6 +13,7 @@ import (
 	"microservice-go-gin/internal/config"
 	"microservice-go-gin/internal/delivery/http/route"
 	"microservice-go-gin/internal/infrastructure/database"
+	_ "microservice-go-gin/docs"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -85,7 +86,7 @@ func main() {
 	// Routes de monitoring
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	// Documentation Swagger
+	// Documentation Swagger  
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Routes API

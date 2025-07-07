@@ -8,6 +8,16 @@ import (
 	"microservice-go-gin/internal/usecase/vote"
 )
 
+// VoteRequest represents the request body for voting
+type VoteRequest struct {
+	OptionIDs []string `json:"option_ids" binding:"required,min=1" example:"550e8400-e29b-41d4-a716-446655440001"`
+}
+
+// VoteResponse represents the response after voting
+type VoteResponse struct {
+	Message string `json:"message" example:"vote submitted successfully"`
+}
+
 type VoteHandler struct {
 	createVoteUC *vote.CreateVoteUseCase
 }
@@ -20,14 +30,14 @@ func NewVoteHandler(createVoteUC *vote.CreateVoteUseCase) *VoteHandler {
 
 // CreateVote godoc
 // @Summary Submit a vote
-// @Description Submit a vote for one or more options
+// @Description Submit a vote for one or more options in a poll
 // @Tags votes
 // @Accept json
 // @Produce json
-// @Param id path string true "Poll ID"
-// @Param vote body map[string][]string true "Vote data"
-// @Success 200 {object} map[string]string
-// @Failure 400 {object} map[string]string
+// @Param id path string true "Poll ID" format(uuid)
+// @Param vote body VoteRequest true "Vote data with option IDs"
+// @Success 200 {object} VoteResponse "Vote submitted successfully"
+// @Failure 400 {object} map[string]string "Invalid request or voting error"
 // @Router /api/v1/polls/{id}/vote [post]
 func (h *VoteHandler) CreateVote(c *gin.Context) {
 	pollIDStr := c.Param("id")
@@ -37,9 +47,7 @@ func (h *VoteHandler) CreateVote(c *gin.Context) {
 		return
 	}
 
-	var requestBody struct {
-		OptionIDs []string `json:"option_ids" binding:"required,min=1"`
-	}
+	var requestBody VoteRequest
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -69,5 +77,5 @@ func (h *VoteHandler) CreateVote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "vote submitted successfully"})
+	c.JSON(http.StatusOK, VoteResponse{Message: "vote submitted successfully"})
 }

@@ -35,6 +35,7 @@ WORKDIR /app
 # Copy binary from builder
 COPY --from=builder /app/main .
 COPY --from=builder /app/config.yaml .
+COPY --from=builder /app/docs ./docs
 
 # Change ownership
 RUN chown -R app:app /app

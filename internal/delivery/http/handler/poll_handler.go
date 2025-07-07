@@ -50,13 +50,14 @@ func (h *PollHandler) CreatePoll(c *gin.Context) {
 
 // GetPoll godoc
 // @Summary Get poll details
-// @Description Get poll details with current results
+// @Description Get poll details with current results and vote counts
 // @Tags polls
 // @Accept json
 // @Produce json
-// @Param id path string true "Poll ID"
-// @Success 200 {object} entity.Poll
-// @Failure 404 {object} map[string]string
+// @Param id path string true "Poll ID" format(uuid)
+// @Success 200 {object} entity.Poll "Poll details with results"
+// @Failure 400 {object} map[string]string "Invalid poll ID"
+// @Failure 404 {object} map[string]string "Poll not found"
 // @Router /api/v1/polls/{id} [get]
 func (h *PollHandler) GetPoll(c *gin.Context) {
 	idStr := c.Param("id")

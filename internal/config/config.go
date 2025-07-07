@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -62,6 +63,7 @@ func Load() (*Config, error) {
 	viper.AddConfigPath("./config")
 
 	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	viper.SetDefault("app.name", "QuickPoll")
 	viper.SetDefault("app.version", "1.0.0")

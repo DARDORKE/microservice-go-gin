@@ -1,0 +1,274 @@
+basePath: /api/v1
+definitions:
+  entity.Option:
+    properties:
+      created_at:
+        example: "2024-01-15T10:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440001
+        type: string
+      order:
+        example: 0
+        type: integer
+      poll_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      text:
+        example: Go
+        type: string
+      updated_at:
+        example: "2024-01-15T10:00:00Z"
+        type: string
+      vote_count:
+        example: 5
+        type: integer
+    type: object
+  entity.Poll:
+    properties:
+      created_at:
+        example: "2024-01-15T10:00:00Z"
+        type: string
+      created_by:
+        example: user123
+        type: string
+      description:
+        example: Choose your preferred programming language
+        type: string
+      expires_at:
+        example: "2024-01-16T10:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      multi_choice:
+        example: false
+        type: boolean
+      options:
+        items:
+          $ref: '#/definitions/entity.Option'
+        type: array
+      require_auth:
+        example: false
+        type: boolean
+      title:
+        example: What's your favorite programming language?
+        type: string
+      updated_at:
+        example: "2024-01-15T10:00:00Z"
+        type: string
+    type: object
+  handler.VoteRequest:
+    properties:
+      option_ids:
+        example:
+        - 550e8400-e29b-41d4-a716-446655440001
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - option_ids
+    type: object
+  handler.VoteResponse:
+    properties:
+      message:
+        example: vote submitted successfully
+        type: string
+    type: object
+  poll.CreatePollInput:
+    properties:
+      description:
+        example: Choose your preferred programming language
+        maxLength: 500
+        type: string
+      expires_in:
+        example: 60
+        type: integer
+      multi_choice:
+        example: false
+        type: boolean
+      options:
+        example:
+        - Go
+        - Python
+        - JavaScript
+        - Rust
+        items:
+          type: string
+        maxItems: 10
+        minItems: 2
+        type: array
+      require_auth:
+        example: false
+        type: boolean
+      title:
+        example: What's your favorite programming language?
+        maxLength: 255
+        minLength: 3
+        type: string
+    required:
+    - options
+    - title
+    type: object
+  poll.CreatePollOutput:
+    properties:
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      qr_code_url:
+        example: http://localhost:8080/api/v1/polls/550e8400-e29b-41d4-a716-446655440000/qr
+        type: string
+      share_url:
+        example: http://localhost:8080/poll/550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@quickpoll.example.com
+    name: API Support
+    url: https://quickpoll.example.com
+  description: API de création de sondages en temps réel avec Go et Gin Framework
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://example.com/terms/
+  title: QuickPoll API
+  version: "1.0"
+paths:
+  /api/v1/polls:
+    post:
+      consumes:
+      - application/json
+      description: Create a new poll with options
+      parameters:
+      - description: Poll data
+        in: body
+        name: poll
+        required: true
+        schema:
+          $ref: '#/definitions/poll.CreatePollInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/poll.CreatePollOutput'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new poll
+      tags:
+      - polls
+  /api/v1/polls/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get poll details with current results and vote counts
+      parameters:
+      - description: Poll ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Poll details with results
+          schema:
+            $ref: '#/definitions/entity.Poll'
+        "400":
+          description: Invalid poll ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Poll not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get poll details
+      tags:
+      - polls
+  /api/v1/polls/{id}/qr:
+    get:
+      description: Generate QR code that links to the poll for easy sharing
+      parameters:
+      - description: Poll ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: QR code image
+          schema:
+            type: file
+        "400":
+          description: Invalid poll ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to generate QR code
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Generate QR code for poll
+      tags:
+      - polls
+  /api/v1/polls/{id}/vote:
+    post:
+      consumes:
+      - application/json
+      description: Submit a vote for one or more options in a poll
+      parameters:
+      - description: Poll ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Vote data with option IDs
+        in: body
+        name: vote
+        required: true
+        schema:
+          $ref: '#/definitions/handler.VoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vote submitted successfully
+          schema:
+            $ref: '#/definitions/handler.VoteResponse'
+        "400":
+          description: Invalid request or voting error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Submit a vote
+      tags:
+      - votes
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

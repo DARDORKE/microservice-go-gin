@@ -20,12 +20,13 @@ func NewQRHandler(baseURL string) *QRHandler {
 
 // GenerateQRCode godoc
 // @Summary Generate QR code for poll
-// @Description Generate QR code that links to the poll
+// @Description Generate QR code that links to the poll for easy sharing
 // @Tags polls
 // @Produce png
-// @Param id path string true "Poll ID"
-// @Success 200 {file} png
-// @Failure 400 {object} map[string]string
+// @Param id path string true "Poll ID" format(uuid)
+// @Success 200 {file} png "QR code image"
+// @Failure 400 {object} map[string]string "Invalid poll ID"
+// @Failure 500 {object} map[string]string "Failed to generate QR code"
 // @Router /api/v1/polls/{id}/qr [get]
 func (h *QRHandler) GenerateQRCode(c *gin.Context) {
 	pollIDStr := c.Param("id")

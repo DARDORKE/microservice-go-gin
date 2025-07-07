@@ -10,20 +10,22 @@ import (
 	"microservice-go-gin/internal/domain/repository"
 )
 
+// CreatePollInput represents the input for creating a new poll
 type CreatePollInput struct {
-	Title       string    `json:"title" binding:"required,min=3,max=255"`
-	Description string    `json:"description" binding:"max=500"`
-	Options     []string  `json:"options" binding:"required,min=2,max=10,dive,required,min=1,max=255"`
-	MultiChoice bool      `json:"multi_choice"`
-	RequireAuth bool      `json:"require_auth"`
-	ExpiresIn   *int      `json:"expires_in"`
-	CreatedBy   string    `json:"-"`
+	Title       string   `json:"title" binding:"required,min=3,max=255" example:"What's your favorite programming language?"`
+	Description string   `json:"description" binding:"max=500" example:"Choose your preferred programming language"`
+	Options     []string `json:"options" binding:"required,min=2,max=10,dive,required,min=1,max=255" example:"Go,Python,JavaScript,Rust"`
+	MultiChoice bool     `json:"multi_choice" example:"false"`
+	RequireAuth bool     `json:"require_auth" example:"false"`
+	ExpiresIn   *int     `json:"expires_in" example:"60"`
+	CreatedBy   string   `json:"-"`
 }
 
+// CreatePollOutput represents the output after creating a poll
 type CreatePollOutput struct {
-	ID        uuid.UUID `json:"id"`
-	ShareURL  string    `json:"share_url"`
-	QRCodeURL string    `json:"qr_code_url"`
+	ID        uuid.UUID `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	ShareURL  string    `json:"share_url" example:"http://localhost:8080/poll/550e8400-e29b-41d4-a716-446655440000"`
+	QRCodeURL string    `json:"qr_code_url" example:"http://localhost:8080/api/v1/polls/550e8400-e29b-41d4-a716-446655440000/qr"`
 }
 
 type CreatePollUseCase struct {
