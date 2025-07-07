@@ -1,0 +1,195 @@
+version: '3.8'
+
+services:
+  # Base de données MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: microservice_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: microservice
+      MYSQL_USER: microservice_user
+      MYSQL_PASSWORD: microservice_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservice_network
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: microservice_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - microservice_network
+
+  # Application Go
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: microservice_app
+    environment:
+      SERVER_PORT: 8080
+      SERVER_HOST: "0.0.0.0"
+      SERVER_MODE: "debug"
+      DB_HOST: "mysql"
+      DB_PORT: 3306
+      DB_USER: "microservice_user"
+      DB_PASSWORD: "microservice_password"
+      DB_NAME: "microservice"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      JWT_SECRET: "your-secret-key-change-in-production"
+      JWT_EXPIRES_IN: "24h"
+      LOG_LEVEL: "info"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservice_network
+
+  # Prometheus pour les métriques
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: microservice_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - app
+    networks:
+      - microservice_network
+
+  # Grafana pour les dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: microservice_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - microservice_network
+
+  # Jaeger pour le tracing distribué
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: microservice_jaeger
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+    networks:
+      - microservice_network
+
+  # Load balancer Nginx (optionnel)
+  nginx:
+    image: nginx:alpine
+    container_name: microservice_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/ssl/certs
+    depends_on:
+      - app
+    networks:
+      - microservice_network
+
+  # Tests
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: microservice_test
+    environment:
+      DB_HOST: "mysql"
+      DB_PORT: 3306
+      DB_USER: "microservice_user"
+      DB_PASSWORD: "microservice_password"
+      DB_NAME: "microservice_test"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+    volumes:
+      - .:/app
+      - test_cache:/go/pkg/mod
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["go", "test", "./...", "-v", "-race", "-coverprofile=coverage.out"]
+    networks:
+      - microservice_network
+    profiles:
+      - test
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  test_cache:
+    driver: local
+
+networks:
+  microservice_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
