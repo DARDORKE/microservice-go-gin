@@ -111,6 +111,7 @@ func (h *Hub) BroadcastVoteUpdate(pollID uuid.UUID, data interface{}) {
 	h.broadcast <- msgBytes
 }
 
+
 func nowUnix() int64 {
 	return time.Now().Unix()
 }

@@ -10,7 +10,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState(['', '']);
-  const [expiresAt, setExpiresAt] = useState('');
+  const [expiresIn, setExpiresIn] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -46,7 +46,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
         title: title.trim(),
         description: description.trim(),
         options: validOptions,
-        expires_at: expiresAt || undefined,
+        expires_in: expiresIn ? parseInt(expiresIn) : undefined,
       };
 
       const createdPoll = await pollService.createPoll(pollData);
@@ -110,13 +110,16 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="expiresAt">Date d'expiration (optionnel)</label>
+          <label htmlFor="expiresIn">Expiration en minutes (optionnel)</label>
           <input
-            type="datetime-local"
-            id="expiresAt"
-            value={expiresAt}
-            onChange={(e) => setExpiresAt(e.target.value)}
+            type="number"
+            id="expiresIn"
+            value={expiresIn}
+            onChange={(e) => setExpiresIn(e.target.value)}
+            placeholder="60"
+            min="1"
           />
+          <small>Laissez vide pour un sondage sans expiration</small>
         </div>
 
         {error && <div className="error">{error}</div>}

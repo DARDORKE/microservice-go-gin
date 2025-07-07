@@ -25,7 +25,7 @@ export interface CreatePollRequest {
   title: string;
   description: string;
   options: string[];
-  expires_at?: string;
+  expires_in?: number;
 }
 
 export interface VoteRequest {

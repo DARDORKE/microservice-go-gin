@@ -15,6 +15,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
   const [error, setError] = useState('');
   const [isVoting, setIsVoting] = useState(false);
   const [showQR, setShowQR] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<string>('');
   
   const { isConnected, lastMessage } = useWebSocket(pollId);
 
@@ -59,6 +60,42 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
     }
   }, [lastMessage, poll]);
 
+  // Compte à rebours pour l'expiration
+  useEffect(() => {
+    if (!poll?.expires_at) {
+      setTimeLeft('');
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const expiry = new Date(poll.expires_at!).getTime();
+      const difference = expiry - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        if (days > 0) {
+          setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+        } else if (hours > 0) {
+          setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+        } else if (minutes > 0) {
+          setTimeLeft(`${minutes}m ${seconds}s`);
+        } else {
+          setTimeLeft(`${seconds}s`);
+        }
+      } else {
+        setTimeLeft('Expiré');
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [poll?.expires_at]);
+
   const handleVote = async () => {
     if (!selectedOption || !poll) return;
 
@@ -77,6 +114,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
 
   const isActive = (poll: Poll) => {
     if (!poll.expires_at) return true;
+    if (timeLeft === 'Expiré') return false;
     return new Date(poll.expires_at) > new Date();
   };
 
@@ -113,6 +151,11 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           <span>Créé le: {formatDate(poll.created_at)}</span>
           {poll.expires_at && (
             <span>Expire le: {formatDate(poll.expires_at)}</span>
+          )}
+          {timeLeft && (
+            <span className={`countdown ${timeLeft === 'Expiré' ? 'expired' : ''}`}>
+              {timeLeft === 'Expiré' ? '⏰ Expiré' : `⏱️ ${timeLeft}`}
+            </span>
           )}
           <span>Total des votes: {getTotalVotes(poll)}</span>
           <span className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
