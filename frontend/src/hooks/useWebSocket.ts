@@ -5,6 +5,7 @@ import config from '../config/environment';
 export const useWebSocket = (pollId: string) => {
   const [isConnected, setIsConnected] = useState(false);
   const [lastMessage, setLastMessage] = useState<WebSocketMessage | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
   const ws = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
@@ -16,11 +17,13 @@ export const useWebSocket = (pollId: string) => {
     const wsUrl = `${config.wsBaseUrl}/ws/polls/${pollId}`;
     console.log('Attempting WebSocket connection to:', wsUrl);
     
+    setIsConnecting(true);
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
       console.log('WebSocket connected successfully');
       setIsConnected(true);
+      setIsConnecting(false);
       reconnectAttemptsRef.current = 0; // Reset reconnect attempts on successful connection
     };
 
@@ -37,6 +40,7 @@ export const useWebSocket = (pollId: string) => {
     ws.current.onclose = (event) => {
       console.log('WebSocket connection closed:', event.code, event.reason);
       setIsConnected(false);
+      setIsConnecting(false);
       
       // Attempt to reconnect if not manually closed and under max attempts
       if (event.code !== 1000 && reconnectAttemptsRef.current < maxReconnectAttempts) {
@@ -53,6 +57,7 @@ export const useWebSocket = (pollId: string) => {
     ws.current.onerror = (error) => {
       console.error('WebSocket error:', error);
       setIsConnected(false);
+      setIsConnecting(false);
     };
   };
 
@@ -69,5 +74,5 @@ export const useWebSocket = (pollId: string) => {
     };
   }, [pollId]);
 
-  return { isConnected, lastMessage };
+  return { isConnected, lastMessage, isConnecting };
 };

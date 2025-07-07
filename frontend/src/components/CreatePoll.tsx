@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { pollService } from '../services/api';
 import { CreatePollRequest } from '../types/poll';
+import Loader from './Loader';
 
 interface ValidationErrors {
   title?: string;
@@ -284,7 +285,14 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
         {error && <div className="error-message general-error">{error}</div>}
 
         <button type="submit" disabled={isLoading} className="submit-btn">
-          {isLoading ? 'Création...' : 'Créer le sondage'}
+          {isLoading ? (
+            <div className="btn-loader">
+              <Loader size="small" inline />
+              Création en cours...
+            </div>
+          ) : (
+            'Créer le sondage'
+          )}
         </button>
       </form>
     </div>

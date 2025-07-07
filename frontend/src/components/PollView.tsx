@@ -3,6 +3,7 @@ import { Line } from 'rc-progress';
 import { Poll, PollOption } from '../types/poll';
 import { pollService } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
+import Loader from './Loader';
 
 interface PollViewProps {
   pollId: string;
@@ -18,8 +19,9 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
   const [showQR, setShowQR] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isQRLoading, setIsQRLoading] = useState(false);
   
-  const { isConnected, lastMessage } = useWebSocket(pollId);
+  const { isConnected, lastMessage, isConnecting } = useWebSocket(pollId);
 
   useEffect(() => {
     const fetchPoll = async () => {
@@ -151,7 +153,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
   };
 
   if (isLoading) {
-    return <div className="loading">Chargement...</div>;
+    return <Loader text="Chargement du sondage..." />;
   }
 
   if (error && !poll) {
@@ -189,8 +191,17 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             <span>📊 Total des votes: {getTotalVotes(poll)}</span>
           </div>
           <div className="poll-meta-item">
-            <span className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
-              {isConnected ? '🟢 Temps réel' : '🔴 Hors ligne'}
+            <span className={`connection-status ${isConnected ? 'connected' : isConnecting ? 'connecting' : 'disconnected'}`}>
+              {isConnecting ? (
+                <>
+                  <Loader size="small" inline />
+                  Connexion...
+                </>
+              ) : isConnected ? (
+                '🟢 Temps réel'
+              ) : (
+                '🔴 Hors ligne'
+              )}
             </span>
           </div>
         </div>
@@ -240,7 +251,14 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             disabled={!selectedOption || isVoting}
             className="vote-button"
           >
-            {isVoting ? 'Vote en cours...' : 'Voter'}
+            {isVoting ? (
+              <div className="btn-loader">
+                <Loader size="small" inline />
+                Vote en cours...
+              </div>
+            ) : (
+              'Voter'
+            )}
           </button>
         )}
         
@@ -272,21 +290,43 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
         </div>
 
         <button
-          onClick={() => setShowQR(!showQR)}
+          onClick={() => {
+            if (!showQR) {
+              setIsQRLoading(true);
+              setTimeout(() => setIsQRLoading(false), 500);
+            }
+            setShowQR(!showQR);
+          }}
           className="qr-button"
+          disabled={isQRLoading}
         >
-          {showQR ? 'Masquer QR' : '📱 Afficher QR Code'}
+          {isQRLoading ? (
+            <div className="btn-loader">
+              <Loader size="small" inline />
+              Génération...
+            </div>
+          ) : (
+            showQR ? 'Masquer QR' : '📱 Afficher QR Code'
+          )}
         </button>
       </div>
 
       {showQR && (
         <div className="qr-code-container">
-          <img
-            src={pollService.getQRCode(pollId)}
-            alt="QR Code du sondage"
-            className="qr-code"
-          />
-          <p>📱 Scannez ce QR code pour accéder au sondage</p>
+          {isQRLoading ? (
+            <div className="qr-loading">
+              <Loader text="Génération du QR code..." />
+            </div>
+          ) : (
+            <>
+              <img
+                src={pollService.getQRCode(pollId)}
+                alt="QR Code du sondage"
+                className="qr-code"
+              />
+              <p>📱 Scannez ce QR code pour accéder au sondage</p>
+            </>
+          )}
         </div>
       )}
     </div>
