@@ -88,7 +88,13 @@
       "generatingQR": "QR-Code wird generiert...",
       "qrAlt": "Umfrage QR-Code",
       "qrDescription": "Scannen Sie diesen QR-Code, um auf die Umfrage zuzugreifen",
-      "copyError": "Fehler beim Kopieren:"
+      "copyError": "Fehler beim Kopieren:",
+      "socialTitle": "In sozialen Medien teilen",
+      "twitterText": "Nehmen Sie an dieser Umfrage teil!",
+      "whatsappText": "Nehmen Sie an dieser Umfrage teil!",
+      "telegramText": "Nehmen Sie an dieser Umfrage teil!",
+      "emailSubject": "Einladung zur Teilnahme an der Umfrage",
+      "emailBody": "Hallo,\n\nIch lade Sie ein, an dieser interessanten Umfrage teilzunehmen:"
     },
     "results": {
       "title": "Echtzeit-Ergebnisse",

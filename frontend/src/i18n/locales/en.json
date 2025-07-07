@@ -88,7 +88,13 @@
       "generatingQR": "Generating QR code...",
       "qrAlt": "Poll QR Code",
       "qrDescription": "Scan this QR code to access the poll",
-      "copyError": "Error copying:"
+      "copyError": "Error copying:",
+      "socialTitle": "Share on social media",
+      "twitterText": "Join this poll!",
+      "whatsappText": "Join this poll!",
+      "telegramText": "Join this poll!",
+      "emailSubject": "Invitation to participate in the poll",
+      "emailBody": "Hello,\n\nI invite you to participate in this interesting poll:"
     },
     "results": {
       "title": "Real-time results",

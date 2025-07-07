@@ -88,7 +88,13 @@
       "generatingQR": "Gerando código QR...",
       "qrAlt": "Código QR da enquete",
       "qrDescription": "Escaneie este código QR para acessar a enquete",
-      "copyError": "Erro ao copiar:"
+      "copyError": "Erro ao copiar:",
+      "socialTitle": "Compartilhar nas redes sociais",
+      "twitterText": "Participe desta enquete!",
+      "whatsappText": "Participe desta enquete!",
+      "telegramText": "Participe desta enquete!",
+      "emailSubject": "Convite para participar da enquete",
+      "emailBody": "Olá,\n\nEu te convido a participar desta enquete interessante:"
     },
     "results": {
       "title": "Resultados em tempo real",

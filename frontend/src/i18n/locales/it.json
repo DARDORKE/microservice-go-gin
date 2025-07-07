@@ -88,7 +88,13 @@
       "generatingQR": "Generazione codice QR...",
       "qrAlt": "Codice QR del sondaggio",
       "qrDescription": "Scansiona questo codice QR per accedere al sondaggio",
-      "copyError": "Errore nella copia:"
+      "copyError": "Errore nella copia:",
+      "socialTitle": "Condividi sui social media",
+      "twitterText": "Partecipa a questo sondaggio!",
+      "whatsappText": "Partecipa a questo sondaggio!",
+      "telegramText": "Partecipa a questo sondaggio!",
+      "emailSubject": "Invito a partecipare al sondaggio",
+      "emailBody": "Ciao,\n\nTi invito a partecipare a questo interessante sondaggio:"
     },
     "results": {
       "title": "Risultati in tempo reale",

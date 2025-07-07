@@ -88,7 +88,13 @@
       "generatingQR": "QR code genereren...",
       "qrAlt": "Poll QR Code",
       "qrDescription": "Scan deze QR code om toegang te krijgen tot de poll",
-      "copyError": "Fout bij kopiëren:"
+      "copyError": "Fout bij kopiëren:",
+      "socialTitle": "Delen op sociale media",
+      "twitterText": "Doe mee aan deze poll!",
+      "whatsappText": "Doe mee aan deze poll!",
+      "telegramText": "Doe mee aan deze poll!",
+      "emailSubject": "Uitnodiging om deel te nemen aan de poll",
+      "emailBody": "Hallo,\n\nIk nodig je uit om deel te nemen aan deze interessante poll:"
     },
     "results": {
       "title": "Realtime resultaten",

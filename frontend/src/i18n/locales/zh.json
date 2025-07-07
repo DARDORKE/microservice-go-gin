@@ -88,7 +88,13 @@
       "generatingQR": "生成二维码中...",
       "qrAlt": "投票二维码",
       "qrDescription": "扫描此二维码访问投票",
-      "copyError": "复制时出错："
+      "copyError": "复制时出错：",
+      "socialTitle": "在社交媒体上分享",
+      "twitterText": "参加这个投票！",
+      "whatsappText": "参加这个投票！",
+      "telegramText": "参加这个投票！",
+      "emailSubject": "邀请参与投票",
+      "emailBody": "您好，\n\n我邀请您参与这个有趣的投票："
     },
     "results": {
       "title": "实时结果",

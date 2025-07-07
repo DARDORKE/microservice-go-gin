@@ -88,7 +88,13 @@
       "generatingQR": "Generando código QR...",
       "qrAlt": "Código QR de la encuesta",
       "qrDescription": "Escanea este código QR para acceder a la encuesta",
-      "copyError": "Error al copiar:"
+      "copyError": "Error al copiar:",
+      "socialTitle": "Compartir en redes sociales",
+      "twitterText": "¡Únete a esta encuesta!",
+      "whatsappText": "¡Únete a esta encuesta!",
+      "telegramText": "¡Únete a esta encuesta!",
+      "emailSubject": "Invitación a participar en la encuesta",
+      "emailBody": "Hola,\n\nTe invito a participar en esta interesante encuesta:"
     },
     "results": {
       "title": "Resultados en tiempo real",
