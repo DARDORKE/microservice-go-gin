@@ -5,6 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"microservice-go-gin/internal/delivery/websocket"
+	"microservice-go-gin/internal/usecase/poll"
 	"microservice-go-gin/internal/usecase/vote"
 )
 
@@ -20,11 +22,15 @@ type VoteResponse struct {
 
 type VoteHandler struct {
 	createVoteUC *vote.CreateVoteUseCase
+	getPollUC    *poll.GetPollUseCase
+	wsHub        *websocket.Hub
 }
 
-func NewVoteHandler(createVoteUC *vote.CreateVoteUseCase) *VoteHandler {
+func NewVoteHandler(createVoteUC *vote.CreateVoteUseCase, getPollUC *poll.GetPollUseCase, wsHub *websocket.Hub) *VoteHandler {
 	return &VoteHandler{
 		createVoteUC: createVoteUC,
+		getPollUC:    getPollUC,
+		wsHub:        wsHub,
 	}
 }
 
@@ -75,6 +81,29 @@ func (h *VoteHandler) CreateVote(c *gin.Context) {
 	if err := h.createVoteUC.Execute(c.Request.Context(), input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	// Get updated poll data and broadcast via WebSocket
+	updatedPoll, err := h.getPollUC.Execute(c.Request.Context(), pollID)
+	if err == nil {
+		// Create a map of option votes for quick lookup
+		optionVotes := make(map[string]int)
+		totalVotes := 0
+		for _, option := range updatedPoll.Options {
+			optionVotes[option.ID.String()] = option.VoteCount
+			totalVotes += option.VoteCount
+		}
+
+		// Broadcast updates for each voted option
+		for _, optionID := range optionIDs {
+			voteData := map[string]interface{}{
+				"option_id":   optionID.String(),
+				"poll_id":     pollID.String(),
+				"votes":       optionVotes[optionID.String()],
+				"total_votes": totalVotes,
+			}
+			h.wsHub.BroadcastVoteUpdate(pollID, voteData)
+		}
 	}
 
 	c.JSON(http.StatusOK, VoteResponse{Message: "vote submitted successfully"})

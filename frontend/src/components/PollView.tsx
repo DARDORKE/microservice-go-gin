@@ -40,8 +40,8 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           if (!prevPoll) return null;
           
           const updatedOptions = prevPoll.options.map(option => {
-            if (option.id === lastMessage.option_id) {
-              return { ...option, vote_count: lastMessage.votes || option.vote_count };
+            if (option.id === lastMessage.data.option_id) {
+              return { ...option, vote_count: lastMessage.data.votes || option.vote_count };
             }
             return option;
           });

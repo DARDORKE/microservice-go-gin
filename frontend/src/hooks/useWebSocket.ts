@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { WebSocketMessage } from '../types/poll';
+import config from '../config/environment';
 
 export const useWebSocket = (pollId: string) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -9,14 +10,18 @@ export const useWebSocket = (pollId: string) => {
   useEffect(() => {
     if (!pollId) return;
 
-    const wsUrl = `ws://${window.location.host}/ws/polls/${pollId}`;
+    const wsUrl = `${config.wsBaseUrl}/ws/polls/${pollId}`;
+    console.log('Attempting WebSocket connection to:', wsUrl);
+    console.log('Current window.location.host:', window.location.host);
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
+      console.log('WebSocket connected successfully');
       setIsConnected(true);
     };
 
     ws.current.onmessage = (event) => {
+      console.log('WebSocket message received:', event.data);
       try {
         const message = JSON.parse(event.data);
         setLastMessage(message);
@@ -25,7 +30,8 @@ export const useWebSocket = (pollId: string) => {
       }
     };
 
-    ws.current.onclose = () => {
+    ws.current.onclose = (event) => {
+      console.log('WebSocket connection closed:', event.code, event.reason);
       setIsConnected(false);
     };
 

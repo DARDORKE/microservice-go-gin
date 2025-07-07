@@ -35,7 +35,10 @@ export interface VoteRequest {
 export interface WebSocketMessage {
   type: string;
   poll_id: string;
-  option_id?: string;
-  votes?: number;
-  total_votes?: number;
+  data: {
+    option_id?: string;
+    votes?: number;
+    total_votes?: number;
+  };
+  timestamp: number;
 }

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { Poll, CreatePollRequest, VoteRequest } from '../types/poll';
+import config from '../config/environment';
 
-const API_BASE_URL = '/api/v1';
+const API_BASE_URL = `${config.apiBaseUrl}/api/v1`;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -26,7 +27,7 @@ export const pollService = {
   },
 
   getQRCode: (pollId: string): string => {
-    return `/api/v1/polls/${pollId}/qr`;
+    return `${config.apiBaseUrl}/api/v1/polls/${pollId}/qr`;
   },
 };
 
