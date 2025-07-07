@@ -81,9 +81,10 @@ make dev-full
 ```
 
 3. **L'API est maintenant accessible sur**
-- API: http://localhost:8080
-- Swagger: http://localhost:8080/swagger/index.html
-- Metrics: http://localhost:8080/metrics
+- Frontend : http://localhost
+- API: http://localhost/api/v1
+- Swagger: http://localhost/swagger/index.html
+- Metrics: http://localhost/metrics
 - Prometheus: http://localhost:9090 (avec monitoring)
 - Grafana: http://localhost:3000 (admin/admin, avec monitoring)
 

@@ -1,0 +1,380 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 1rem;
+  color: white;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.App-header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.view-poll-section {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.view-poll-section input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.App-header button {
+  padding: 0.5rem 1rem;
+  background-color: #61dafb;
+  color: #282c34;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.App-header button:hover {
+  background-color: #4fa8c5;
+}
+
+.App-header button.active {
+  background-color: #4fa8c5;
+}
+
+.App-main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.App-footer {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+}
+
+.create-poll {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.create-poll h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #282c34;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.option-input {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.option-input input {
+  flex: 1;
+}
+
+.option-input button {
+  padding: 0.75rem 1rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.option-input button:hover {
+  background-color: #c82333;
+}
+
+.form-group button {
+  padding: 0.75rem 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.form-group button:hover {
+  background-color: #218838;
+}
+
+.create-poll > form > button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.create-poll > form > button:hover {
+  background-color: #0056b3;
+}
+
+.create-poll > form > button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.poll-view {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.poll-header {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.poll-header h2 {
+  margin: 0 0 1rem 0;
+  color: #282c34;
+}
+
+.poll-header .description {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.poll-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.connection-status {
+  font-weight: bold;
+}
+
+.connection-status.connected {
+  color: #28a745;
+}
+
+.connection-status.disconnected {
+  color: #dc3545;
+}
+
+.poll-options {
+  margin-bottom: 2rem;
+}
+
+.poll-option {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.option-header label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.vote-count {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.vote-bar {
+  position: relative;
+  height: 20px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.vote-progress {
+  height: 100%;
+  background-color: #007bff;
+  transition: width 0.3s ease;
+}
+
+.percentage {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.poll-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.vote-button {
+  padding: 1rem 2rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.vote-button:hover {
+  background-color: #218838;
+}
+
+.vote-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.qr-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.qr-button:hover {
+  background-color: #138496;
+}
+
+.vote-success {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.poll-expired {
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.qr-code-container {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.qr-code {
+  max-width: 200px;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+  .App-header nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .view-poll-section {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .view-poll-section input {
+    width: 100%;
+  }
+  
+  .poll-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .option-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .poll-actions {
+    flex-direction: column;
+  }
+}

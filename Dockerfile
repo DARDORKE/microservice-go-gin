@@ -1,8 +1,13 @@
-# Build stage
-FROM golang:1.21-alpine AS builder
+# Development stage avec Go 1.24
+FROM golang:1.24-alpine
 
-# Install build dependencies
-RUN apk add --no-cache git gcc musl-dev
+# Install dependencies
+RUN apk add --no-cache git gcc musl-dev make curl
+
+# Install development tools
+RUN go install github.com/air-verse/air@latest && \
+    go install github.com/swaggo/swag/cmd/swag@latest && \
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 # Set working directory
 WORKDIR /app
@@ -16,35 +21,11 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=1 go build -a -installsuffix cgo -o main cmd/server/main.go
-
-# Final stage
-FROM alpine:latest
-
-# Install runtime dependencies
-RUN apk --no-cache add ca-certificates tzdata
-
-# Create non-root user
-RUN addgroup -g 1000 -S app && \
-    adduser -u 1000 -S app -G app
-
-# Set working directory
-WORKDIR /app
-
-# Copy binary from builder
-COPY --from=builder /app/main .
-COPY --from=builder /app/config.yaml .
-COPY --from=builder /app/docs ./docs
-
-# Change ownership
-RUN chown -R app:app /app
-
-# Switch to non-root user
-USER app
+# Generate Swagger docs
+RUN swag init -g cmd/server/main.go -o docs/
 
 # Expose port
 EXPOSE 8080
 
-# Run the application
-CMD ["./main"]
+# Start with air for hot reload
+CMD ["go", "run", "cmd/server/main.go"]

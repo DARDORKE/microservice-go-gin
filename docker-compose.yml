@@ -54,9 +54,7 @@ services:
 
   # Application Go
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    build: .
     container_name: quickpoll_app
     environment:
       DATABASE_HOST: "mysql"
@@ -88,6 +86,22 @@ services:
     networks:
       - microservice_network
 
+  # Frontend React
+  frontend:
+    build: ./frontend
+    container_name: quickpoll_frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservice_network
+
   # Prometheus pour les métriques
   prometheus:
     image: prom/prometheus:latest
@@ -108,9 +122,6 @@ services:
       - app
     networks:
       - microservice_network
-    profiles:
-      - monitoring
-      - full
 
   # Grafana pour les dashboards (optionnel)
   grafana:
@@ -130,38 +141,7 @@ services:
       - prometheus
     networks:
       - microservice_network
-    profiles:
-      - full
-      - monitoring
 
-  # Tests
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    container_name: microservice_test
-    environment:
-      DB_HOST: "mysql"
-      DB_PORT: 3306
-      DB_USER: "microservice_user"
-      DB_PASSWORD: "microservice_password"
-      DB_NAME: "microservice_test"
-      REDIS_HOST: "redis"
-      REDIS_PORT: 6379
-    volumes:
-      - .:/app
-      - test_cache:/go/pkg/mod
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: ["go", "test", "./...", "-v", "-race", "-coverprofile=coverage.out"]
-    networks:
-      - microservice_network
-    profiles:
-      - test
-      - full
 
 volumes:
   mysql_data:
@@ -171,8 +151,6 @@ volumes:
   prometheus_data:
     driver: local
   grafana_data:
-    driver: local
-  test_cache:
     driver: local
 
 networks:
