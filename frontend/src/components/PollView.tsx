@@ -41,7 +41,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           
           const updatedOptions = prevPoll.options.map(option => {
             if (option.id === lastMessage.option_id) {
-              return { ...option, votes: lastMessage.votes || option.votes };
+              return { ...option, vote_count: lastMessage.votes || option.vote_count };
             }
             return option;
           });
@@ -49,7 +49,6 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           return {
             ...prevPoll,
             options: updatedOptions,
-            total_votes: lastMessage.total_votes || prevPoll.total_votes,
           };
         });
       }
@@ -63,13 +62,22 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
     setError('');
 
     try {
-      await pollService.vote(pollId, { option_id: selectedOption });
+      await pollService.vote(pollId, { option_ids: [selectedOption] });
       setHasVoted(true);
     } catch (err) {
       setError('Erreur lors du vote');
     } finally {
       setIsVoting(false);
     }
+  };
+
+  const isActive = (poll: Poll) => {
+    if (!poll.expires_at) return true;
+    return new Date(poll.expires_at) > new Date();
+  };
+
+  const getTotalVotes = (poll: Poll) => {
+    return poll.options.reduce((total, option) => total + option.vote_count, 0);
   };
 
   const getPercentage = (votes: number, total: number) => {
@@ -102,7 +110,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           {poll.expires_at && (
             <span>Expire le: {formatDate(poll.expires_at)}</span>
           )}
-          <span>Total des votes: {poll.total_votes}</span>
+          <span>Total des votes: {getTotalVotes(poll)}</span>
           <span className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
             {isConnected ? '🟢 Temps réel' : '🔴 Hors ligne'}
           </span>
@@ -120,19 +128,19 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                   value={option.id}
                   checked={selectedOption === option.id}
                   onChange={(e) => setSelectedOption(e.target.value)}
-                  disabled={hasVoted || !poll.is_active}
+                  disabled={hasVoted || !isActive(poll)}
                 />
                 {option.text}
               </label>
-              <span className="vote-count">{option.votes} votes</span>
+              <span className="vote-count">{option.vote_count} votes</span>
             </div>
             <div className="vote-bar">
               <div
                 className="vote-progress"
-                style={{ width: `${getPercentage(option.votes, poll.total_votes)}%` }}
+                style={{ width: `${getPercentage(option.vote_count, getTotalVotes(poll))}%` }}
               />
               <span className="percentage">
-                {getPercentage(option.votes, poll.total_votes)}%
+                {getPercentage(option.vote_count, getTotalVotes(poll))}%
               </span>
             </div>
           </div>
@@ -142,7 +150,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
       {error && <div className="error">{error}</div>}
 
       <div className="poll-actions">
-        {!hasVoted && poll.is_active && (
+        {!hasVoted && isActive(poll) && (
           <button
             onClick={handleVote}
             disabled={!selectedOption || isVoting}
@@ -156,7 +164,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           <div className="vote-success">✅ Votre vote a été enregistré</div>
         )}
 
-        {!poll.is_active && (
+        {!isActive(poll) && (
           <div className="poll-expired">⏰ Ce sondage a expiré</div>
         )}
 

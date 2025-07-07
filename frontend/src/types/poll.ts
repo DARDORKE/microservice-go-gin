@@ -1,18 +1,24 @@
 export interface PollOption {
   id: string;
+  poll_id: string;
   text: string;
-  votes: number;
+  order: number;
+  created_at: string;
+  updated_at: string;
+  vote_count: number;
 }
 
 export interface Poll {
   id: string;
   title: string;
   description: string;
-  options: PollOption[];
+  created_by: string;
+  multi_choice: boolean;
+  require_auth: boolean;
+  expires_at: string | null;
   created_at: string;
-  expires_at?: string;
-  total_votes: number;
-  is_active: boolean;
+  updated_at: string;
+  options: PollOption[];
 }
 
 export interface CreatePollRequest {
@@ -23,7 +29,7 @@ export interface CreatePollRequest {
 }
 
 export interface VoteRequest {
-  option_id: string;
+  option_ids: string[];
 }
 
 export interface WebSocketMessage {
