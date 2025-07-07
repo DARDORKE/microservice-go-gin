@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -75,27 +76,34 @@ func main() {
 	r.Use(func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
 		
-		// En production, être plus restrictif avec les origines
+		// Toujours définir les headers CORS de base
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		
+		// Gérer les origines autorisées
 		if cfg.App.Environment == "production" {
 			allowedOrigins := []string{cfg.Server.FrontendURL}
 			allowed := false
+			
+			// Vérifier les origines exactes et les domaines Vercel
 			for _, allowedOrigin := range allowedOrigins {
-				if origin == allowedOrigin {
+				if origin == allowedOrigin || strings.HasSuffix(origin, ".vercel.app") {
 					allowed = true
 					break
 				}
 			}
+			
 			if allowed {
 				c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+				log.Printf("CORS: Authorized origin %s", origin)
+			} else {
+				log.Printf("CORS: Rejected origin %s (expected: %s)", origin, cfg.Server.FrontendURL)
 			}
 		} else {
 			// En développement, autoriser toutes les origines
 			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		}
-		
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
