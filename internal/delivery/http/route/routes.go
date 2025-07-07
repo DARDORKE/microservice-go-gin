@@ -3,6 +3,7 @@ package route
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"microservice-go-gin/internal/config"
 	"microservice-go-gin/internal/delivery/http/handler"
 	"microservice-go-gin/internal/delivery/websocket"
 	"microservice-go-gin/internal/infrastructure/database"
@@ -10,7 +11,7 @@ import (
 	"microservice-go-gin/internal/usecase/vote"
 )
 
-func SetupRoutes(router *gin.Engine, db *gorm.DB, baseURL string) {
+func SetupRoutes(router *gin.Engine, db *gorm.DB, baseURL string, cfg *config.Config) {
 	// Initialize repositories
 	pollRepo := database.NewPollRepository(db)
 	voteRepo := database.NewVoteRepository(db)
@@ -53,9 +54,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, baseURL string) {
 	// Poll redirect route for QR codes
 	router.GET("/poll/:id", func(c *gin.Context) {
 		pollID := c.Param("id")
-		// En développement, rediriger vers le frontend local
-		frontendURL := "http://localhost:3001"
-		// En production, cette URL devrait être configurée via une variable d'environnement
+		frontendURL := cfg.Server.FrontendURL
 		redirectURL := frontendURL + "?poll=" + pollID
 		c.Redirect(302, redirectURL)
 	})

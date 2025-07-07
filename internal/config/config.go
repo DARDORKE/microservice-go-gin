@@ -24,6 +24,7 @@ type AppConfig struct {
 }
 
 type DatabaseConfig struct {
+	Type            string
 	Host            string
 	Port            int
 	User            string
@@ -54,6 +55,8 @@ type ServerConfig struct {
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 	IdleTimeout  time.Duration
+	BaseURL      string
+	FrontendURL  string
 }
 
 func Load() (*Config, error) {
@@ -70,6 +73,7 @@ func Load() (*Config, error) {
 	viper.SetDefault("app.environment", "development")
 	viper.SetDefault("app.debug", true)
 
+	viper.SetDefault("database.type", "mysql")
 	viper.SetDefault("database.host", "localhost")
 	viper.SetDefault("database.port", 3306)
 	viper.SetDefault("database.user", "root")
@@ -81,6 +85,7 @@ func Load() (*Config, error) {
 
 	viper.SetDefault("redis.host", "localhost")
 	viper.SetDefault("redis.port", 6379)
+	viper.SetDefault("redis.password", "")
 	viper.SetDefault("redis.db", 0)
 	viper.SetDefault("redis.pool_size", 10)
 	viper.SetDefault("redis.min_idle_conns", 5)
@@ -93,6 +98,8 @@ func Load() (*Config, error) {
 	viper.SetDefault("server.read_timeout", 15*time.Second)
 	viper.SetDefault("server.write_timeout", 15*time.Second)
 	viper.SetDefault("server.idle_timeout", 60*time.Second)
+	viper.SetDefault("server.base_url", "http://localhost:8080")
+	viper.SetDefault("server.frontend_url", "http://localhost:3001")
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {

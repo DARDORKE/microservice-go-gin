@@ -1,20 +1,24 @@
 // Configuration des URLs selon l'environnement
 const getApiBaseUrl = (): string => {
-  // En production ou quand on utilise le proxy nginx, utiliser des URLs relatives
-  if (process.env.NODE_ENV === 'production' || !process.env.REACT_APP_API_BASE_URL) {
-    return '';
+  // En production, utiliser l'URL du backend déployé sur Railway
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.REACT_APP_API_BASE_URL || '';
   }
-  return process.env.REACT_APP_API_BASE_URL;
+  // En développement, utiliser l'URL locale ou celle définie dans .env
+  return process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
 };
 
 const getWebSocketBaseUrl = (): string => {
-  // En production ou quand on utilise le proxy nginx
-  if (process.env.NODE_ENV === 'production' || !process.env.REACT_APP_WS_BASE_URL) {
-    // Déterminer le protocole WebSocket selon le protocole de la page
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${window.location.host}`;
+  // En production, utiliser l'URL WebSocket du backend déployé
+  if (process.env.NODE_ENV === 'production') {
+    const apiUrl = process.env.REACT_APP_API_BASE_URL || '';
+    if (apiUrl) {
+      return apiUrl.replace(/^https?:/, apiUrl.startsWith('https:') ? 'wss:' : 'ws:');
+    }
+    return '';
   }
-  return process.env.REACT_APP_WS_BASE_URL;
+  // En développement
+  return process.env.REACT_APP_WS_BASE_URL || 'ws://localhost:8080';
 };
 
 export const config = {

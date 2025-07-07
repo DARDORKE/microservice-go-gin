@@ -5,6 +5,7 @@ app:
   debug: true
 
 database:
+  type: mysql
   host: localhost
   port: 3306
   user: root
@@ -32,3 +33,5 @@ server:
   read_timeout: 15s
   write_timeout: 15s
   idle_timeout: 60s
+  base_url: http://localhost:8080
+  frontend_url: http://localhost:3001
