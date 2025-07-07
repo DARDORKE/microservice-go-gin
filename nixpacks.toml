@@ -1,0 +1,13 @@
+[variables]
+GO_VERSION = "1.24"
+
+[phases.build]
+cmds = [
+    "go mod download",
+    "go install github.com/swaggo/swag/cmd/swag@latest",
+    "swag init -g cmd/server/main.go -o docs/",
+    "go build -o main cmd/server/main.go"
+]
+
+[phases.start]
+cmd = "./main"
