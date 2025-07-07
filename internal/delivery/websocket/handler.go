@@ -3,6 +3,8 @@ package websocket
 import (
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +23,29 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		return true // Allow all origins in development
+		// En développement, autoriser toutes les origines
+		if os.Getenv("APP_ENVIRONMENT") != "production" {
+			return true
+		}
+
+		// En production, vérifier les origines autorisées
+		origin := r.Header.Get("Origin")
+		allowedOrigins := []string{
+			os.Getenv("FRONTEND_URL"),
+			"https://localhost:3000",
+			"http://localhost:3000",
+			"https://localhost:3001", 
+			"http://localhost:3001",
+		}
+
+		for _, allowed := range allowedOrigins {
+			if allowed != "" && (origin == allowed || strings.HasSuffix(origin, ".vercel.app")) {
+				return true
+			}
+		}
+
+		log.Printf("WebSocket origin denied: %s", origin)
+		return false
 	},
 }
 
