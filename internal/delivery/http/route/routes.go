@@ -50,6 +50,16 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, baseURL string) {
 		websocket.HandleWebSocket(c, wsHub)
 	})
 
+	// Poll redirect route for QR codes
+	router.GET("/poll/:id", func(c *gin.Context) {
+		pollID := c.Param("id")
+		// En développement, rediriger vers le frontend local
+		frontendURL := "http://localhost:3001"
+		// En production, cette URL devrait être configurée via une variable d'environnement
+		redirectURL := frontendURL + "?poll=" + pollID
+		c.Redirect(302, redirectURL)
+	})
+
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{

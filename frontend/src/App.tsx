@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import CreatePoll from './components/CreatePoll';
 import PollView from './components/PollView';
@@ -7,6 +7,18 @@ function App() {
   const [currentView, setCurrentView] = useState<'create' | 'view'>('create');
   const [currentPollId, setCurrentPollId] = useState<string>('');
   const [pollIdInput, setPollIdInput] = useState<string>('');
+
+  // Vérifier s'il y a un paramètre poll dans l'URL au chargement
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pollIdFromUrl = urlParams.get('poll');
+    if (pollIdFromUrl) {
+      setCurrentPollId(pollIdFromUrl);
+      setCurrentView('view');
+      // Nettoyer l'URL sans recharger la page
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const handlePollCreated = (pollId: string) => {
     setCurrentPollId(pollId);
