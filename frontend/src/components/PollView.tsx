@@ -162,7 +162,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error(t('poll.share.copyError'), err);
+      // Error copying to clipboard - user will not see visual feedback
     }
   };
 

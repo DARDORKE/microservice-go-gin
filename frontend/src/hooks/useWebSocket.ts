@@ -15,37 +15,32 @@ export const useWebSocket = (pollId: string) => {
     if (!pollId) return;
 
     const wsUrl = `${config.wsBaseUrl}/ws/polls/${pollId}`;
-    console.log('Attempting WebSocket connection to:', wsUrl);
     
     setIsConnecting(true);
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
-      console.log('WebSocket connected successfully');
       setIsConnected(true);
       setIsConnecting(false);
       reconnectAttemptsRef.current = 0; // Reset reconnect attempts on successful connection
     };
 
     ws.current.onmessage = (event) => {
-      console.log('WebSocket message received:', event.data);
       try {
         const message = JSON.parse(event.data);
         setLastMessage(message);
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        // Error parsing WebSocket message - silently ignore
       }
     };
 
     ws.current.onclose = (event) => {
-      console.log('WebSocket connection closed:', event.code, event.reason);
       setIsConnected(false);
       setIsConnecting(false);
       
       // Attempt to reconnect if not manually closed and under max attempts
       if (event.code !== 1000 && reconnectAttemptsRef.current < maxReconnectAttempts) {
         const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000); // Exponential backoff, max 30s
-        console.log(`Attempting to reconnect in ${delay}ms (attempt ${reconnectAttemptsRef.current + 1}/${maxReconnectAttempts})`);
         
         reconnectTimeoutRef.current = setTimeout(() => {
           reconnectAttemptsRef.current++;
@@ -54,8 +49,7 @@ export const useWebSocket = (pollId: string) => {
       }
     };
 
-    ws.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
+    ws.current.onerror = () => {
       setIsConnected(false);
       setIsConnecting(false);
     };
