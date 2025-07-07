@@ -3,6 +3,8 @@ package poll
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,13 +14,13 @@ import (
 
 // CreatePollInput represents the input for creating a new poll
 type CreatePollInput struct {
-	Title       string   `json:"title" binding:"required,min=3,max=255" example:"What's your favorite programming language?"`
-	Description string   `json:"description" binding:"max=500" example:"Choose your preferred programming language"`
-	Options     []string `json:"options" binding:"required,min=2,max=10,dive,required,min=1,max=255" example:"Go,Python,JavaScript,Rust"`
+	Title       string   `json:"title" binding:"required,min=3,max=255" validate:"required,min=3,max=255" example:"What's your favorite programming language?"`
+	Description string   `json:"description" binding:"max=500" validate:"max=500" example:"Choose your preferred programming language"`
+	Options     []string `json:"options" binding:"required,min=2,max=10,dive,required,min=1,max=255" validate:"required,min=2,max=10,dive,required,min=1,max=255" example:"Go,Python,JavaScript,Rust"`
 	MultiChoice bool     `json:"multi_choice" example:"false"`
 	RequireAuth bool     `json:"require_auth" example:"false"`
-	ExpiresIn   *int     `json:"expires_in" example:"60"`
-	CreatedBy   string   `json:"-"`
+	ExpiresIn   *int     `json:"expires_in" validate:"omitempty,min=1,max=10080" example:"60"`
+	CreatedBy   string   `json:"-" validate:"max=100"`
 }
 
 // CreatePollOutput represents the output after creating a poll
@@ -41,8 +43,8 @@ func NewCreatePollUseCase(pollRepo repository.PollRepository, baseURL string) *C
 }
 
 func (uc *CreatePollUseCase) Execute(ctx context.Context, input CreatePollInput) (*CreatePollOutput, error) {
-	if len(input.Options) < 2 {
-		return nil, errors.New("poll must have at least 2 options")
+	if err := uc.validateInput(input); err != nil {
+		return nil, err
 	}
 
 	poll := &entity.Poll{
@@ -77,4 +79,70 @@ func (uc *CreatePollUseCase) Execute(ctx context.Context, input CreatePollInput)
 	}
 
 	return output, nil
+}
+
+// validateInput validates the poll creation input
+func (uc *CreatePollUseCase) validateInput(input CreatePollInput) error {
+	var validationErrors []string
+
+	// Validate title
+	if strings.TrimSpace(input.Title) == "" {
+		validationErrors = append(validationErrors, "title cannot be empty")
+	}
+	if len(input.Title) < 3 {
+		validationErrors = append(validationErrors, "title must be at least 3 characters long")
+	}
+	if len(input.Title) > 255 {
+		validationErrors = append(validationErrors, "title must be no more than 255 characters long")
+	}
+
+	// Validate description
+	if len(input.Description) > 500 {
+		validationErrors = append(validationErrors, "description must be no more than 500 characters long")
+	}
+
+	// Validate options
+	if len(input.Options) < 2 {
+		validationErrors = append(validationErrors, "poll must have at least 2 options")
+	}
+	if len(input.Options) > 10 {
+		validationErrors = append(validationErrors, "poll can have at most 10 options")
+	}
+
+	// Validate each option
+	for i, option := range input.Options {
+		if strings.TrimSpace(option) == "" {
+			validationErrors = append(validationErrors, fmt.Sprintf("option %d cannot be empty", i+1))
+		}
+		if len(option) > 255 {
+			validationErrors = append(validationErrors, fmt.Sprintf("option %d must be no more than 255 characters long", i+1))
+		}
+	}
+
+	// Check for duplicate options
+	optionMap := make(map[string]bool)
+	for _, option := range input.Options {
+		cleanOption := strings.TrimSpace(strings.ToLower(option))
+		if optionMap[cleanOption] {
+			validationErrors = append(validationErrors, "duplicate options are not allowed")
+			break
+		}
+		optionMap[cleanOption] = true
+	}
+
+	// Validate expires_in
+	if input.ExpiresIn != nil {
+		if *input.ExpiresIn < 1 {
+			validationErrors = append(validationErrors, "expires_in must be at least 1 minute")
+		}
+		if *input.ExpiresIn > 10080 { // 1 week in minutes
+			validationErrors = append(validationErrors, "expires_in cannot be more than 1 week (10080 minutes)")
+		}
+	}
+
+	if len(validationErrors) > 0 {
+		return errors.New(strings.Join(validationErrors, "; "))
+	}
+
+	return nil
 }

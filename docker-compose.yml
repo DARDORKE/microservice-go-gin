@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Utilisation des profils:
 # - Défaut (base): mysql, redis, app
 # - Profil monitoring: ajoute prometheus et grafana

@@ -2,8 +2,10 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"microservice-go-gin/internal/usecase/poll"
 )
@@ -33,7 +35,7 @@ func NewPollHandler(createPollUC *poll.CreatePollUseCase, getPollUC *poll.GetPol
 func (h *PollHandler) CreatePoll(c *gin.Context) {
 	var input poll.CreatePollInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": h.formatValidationError(err)})
 		return
 	}
 
@@ -74,4 +76,39 @@ func (h *PollHandler) GetPoll(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, poll)
+}
+
+// formatValidationError formats validation errors into user-friendly messages
+func (h *PollHandler) formatValidationError(err error) map[string]string {
+	errors := make(map[string]string)
+	
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		for _, fieldError := range validationErrors {
+			fieldName := strings.ToLower(fieldError.Field())
+			switch fieldError.Tag() {
+			case "required":
+				errors[fieldName] = fieldName + " is required"
+			case "min":
+				if fieldError.Kind().String() == "string" {
+					errors[fieldName] = fieldName + " must be at least " + fieldError.Param() + " characters long"
+				} else {
+					errors[fieldName] = fieldName + " must be at least " + fieldError.Param()
+				}
+			case "max":
+				if fieldError.Kind().String() == "string" {
+					errors[fieldName] = fieldName + " must be no more than " + fieldError.Param() + " characters long"
+				} else {
+					errors[fieldName] = fieldName + " must be no more than " + fieldError.Param()
+				}
+			case "dive":
+				errors[fieldName] = "Each " + fieldName + " item is invalid"
+			default:
+				errors[fieldName] = fieldName + " is invalid"
+			}
+		}
+	} else {
+		errors["validation"] = err.Error()
+	}
+	
+	return errors
 }
