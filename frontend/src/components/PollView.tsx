@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Line } from 'rc-progress';
 import { Poll, PollOption } from '../types/poll';
 import { pollService } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
 import Loader from './Loader';
+import ProgressBar from './ProgressBar';
 
 interface PollViewProps {
   pollId: string;
@@ -336,27 +336,29 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             {/* Progress Bar */}
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                <Line
-                  percent={parseFloat(getPercentage(option.vote_count, getTotalVotes(poll)))}
-                  strokeWidth={6}
-                  strokeColor="url(#gradient)"
-                  trailWidth={6}
-                  trailColor="#e5e7eb"
-                  strokeLinecap="round"
+                <ProgressBar
+                  percentage={parseFloat(getPercentage(option.vote_count, getTotalVotes(poll)))}
+                  size="lg"
+                  color="auto"
+                  animated={true}
+                  className="mb-1"
                 />
-                <svg width="0" height="0">
-                  <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#0ea5e9" />
-                      <stop offset="100%" stopColor="#10b981" />
-                    </linearGradient>
-                  </defs>
-                </svg>
+                {/* Vote count indicator below progress bar */}
+                <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+                  <span>{option.vote_count} vote{option.vote_count !== 1 ? 's' : ''}</span>
+                  <span>{getTotalVotes(poll)} total</span>
+                </div>
               </div>
-              <div className="bg-white border border-gray-200 px-3 py-1 rounded-lg shadow-sm">
-                <span className="text-sm font-bold text-gray-800">
-                  {getPercentage(option.vote_count, getTotalVotes(poll))}%
-                </span>
+              <div className={`px-4 py-2 rounded-xl shadow-md min-w-[4rem] text-center text-white font-bold text-sm ${
+                parseFloat(getPercentage(option.vote_count, getTotalVotes(poll))) >= 70 
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
+                  : parseFloat(getPercentage(option.vote_count, getTotalVotes(poll))) >= 40
+                  ? 'bg-gradient-to-r from-blue-500 to-cyan-600'
+                  : parseFloat(getPercentage(option.vote_count, getTotalVotes(poll))) >= 20
+                  ? 'bg-gradient-to-r from-yellow-500 to-orange-600'
+                  : 'bg-gradient-to-r from-red-500 to-red-600'
+              }`}>
+                {getPercentage(option.vote_count, getTotalVotes(poll))}%
               </div>
             </div>
           </div>
