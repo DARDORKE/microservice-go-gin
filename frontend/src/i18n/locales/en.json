@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "QuickPoll",
+    "subtitle": "Create real-time polls",
+    "footer": {
+      "description": "Real-time polls",
+      "copyright": "© 2024 QuickPoll. Powered by Go, React and innovation.",
+      "features": {
+        "realtime": "Real-time",
+        "responsive": "Responsive",
+        "secure": "Secure"
+      }
+    }
+  },
+  "nav": {
+    "createNewPoll": "Create new poll"
+  },
+  "createPoll": {
+    "title": "Create a new poll",
+    "subtitle": "Create an interactive poll in just a few clicks. Your participants can vote in real-time.",
+    "form": {
+      "title": {
+        "label": "Poll title",
+        "placeholder": "Enter your poll title...",
+        "required": "Title is required",
+        "minLength": "Title must contain at least 3 characters",
+        "maxLength": "Title cannot exceed 255 characters"
+      },
+      "description": {
+        "label": "Description (optional)",
+        "placeholder": "Describe your poll in a few words...",
+        "maxLength": "Description cannot exceed 500 characters",
+        "counter": "characters"
+      },
+      "options": {
+        "label": "Poll options",
+        "subtitle": "(min 2, max 10)",
+        "placeholder": "Option",
+        "add": "Add option",
+        "minOptions": "At least 2 options are required",
+        "maxOptions": "Maximum 10 options allowed",
+        "maxLength": "An option cannot exceed 255 characters",
+        "duplicates": "Duplicate options are not allowed"
+      },
+      "expiration": {
+        "label": "Expiration in minutes (optional)",
+        "placeholder": "60",
+        "help": "Leave empty for a poll without expiration (max 1 week = 10080 minutes)",
+        "min": "Expiration duration must be at least 1 minute",
+        "max": "Expiration duration cannot exceed 1 week (10080 minutes)"
+      },
+      "submit": "Create poll",
+      "creating": "Creating...",
+      "error": "Error creating poll"
+    }
+  },
+  "poll": {
+    "loading": "Loading poll...",
+    "loadingError": "Error loading poll",
+    "notFound": "Poll not found",
+    "notFoundDescription": "This poll doesn't exist or is no longer available.",
+    "expired": "This poll has expired",
+    "votes": "votes",
+    "vote": "vote",
+    "submit": "Vote now",
+    "voting": "Voting...",
+    "success": "Your vote has been recorded successfully!",
+    "error": "Error voting",
+    "alreadyVoted": "You have already voted in this poll",
+    "selectOption": "Please select an option",
+    "createdOn": "Created on",
+    "expiresOn": "Expires on",
+    "timeRemaining": "Time remaining",
+    "totalVotes": "Total votes",
+    "connecting": "Connecting...",
+    "realtimeActive": "Real-time active",
+    "offline": "Offline",
+    "total": "total",
+    "share": {
+      "title": "Share this poll",
+      "description": "Invite others to participate in your poll",
+      "copyLink": "Copy",
+      "copied": "Copied!",
+      "qrCode": "QR Code",
+      "showQR": "Show QR Code",
+      "hideQR": "Hide QR Code",
+      "generating": "Generating...",
+      "generatingQR": "Generating QR code...",
+      "qrAlt": "Poll QR Code",
+      "qrDescription": "Scan this QR code to access the poll",
+      "copyError": "Error copying:"
+    },
+    "results": {
+      "title": "Real-time results",
+      "totalVotes": "Total votes"
+    },
+    "time": {
+      "days": "d",
+      "hours": "h",
+      "minutes": "m",
+      "seconds": "s"
+    }
+  },
+  "language": {
+    "switch": "Switch language",
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "zh": "中文",
+    "ar": "العربية",
+    "ru": "Русский"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "back": "Back"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "QuickPoll",
+    "subtitle": "创建实时投票",
+    "footer": {
+      "description": "实时投票",
+      "copyright": "© 2024 QuickPoll。由 Go、React 和创新驱动。",
+      "features": {
+        "realtime": "实时",
+        "responsive": "响应式",
+        "secure": "安全"
+      }
+    }
+  },
+  "nav": {
+    "createNewPoll": "创建新投票"
+  },
+  "createPoll": {
+    "title": "创建新投票",
+    "subtitle": "只需几次点击即可创建互动投票。您的参与者可以实时投票。",
+    "form": {
+      "title": {
+        "label": "投票标题",
+        "placeholder": "输入您的投票标题...",
+        "required": "标题是必需的",
+        "minLength": "标题必须至少包含3个字符",
+        "maxLength": "标题不能超过255个字符"
+      },
+      "description": {
+        "label": "描述（可选）",
+        "placeholder": "用几句话描述您的投票...",
+        "maxLength": "描述不能超过500个字符",
+        "counter": "字符"
+      },
+      "options": {
+        "label": "投票选项",
+        "subtitle": "（最少2个，最多10个）",
+        "placeholder": "选项",
+        "add": "添加选项",
+        "minOptions": "至少需要2个选项",
+        "maxOptions": "最多允许10个选项",
+        "maxLength": "选项不能超过255个字符",
+        "duplicates": "不允许重复选项"
+      },
+      "expiration": {
+        "label": "过期时间（分钟）（可选）",
+        "placeholder": "60",
+        "help": "留空表示投票无过期时间（最长1周= 10080分钟）",
+        "min": "过期时间必须至少为1分钟",
+        "max": "过期时间不能超过1周（10080分钟）"
+      },
+      "submit": "创建投票",
+      "creating": "创建中...",
+      "error": "创建投票时出错"
+    }
+  },
+  "poll": {
+    "loading": "正在加载投票...",
+    "loadingError": "加载投票时出错",
+    "notFound": "未找到投票",
+    "notFoundDescription": "此投票不存在或不再可用。",
+    "expired": "此投票已过期",
+    "votes": "票",
+    "vote": "票",
+    "submit": "立即投票",
+    "voting": "投票中...",
+    "success": "您的投票已成功记录！",
+    "error": "投票时出错",
+    "alreadyVoted": "您已经在此投票中投过票了",
+    "selectOption": "请选择一个选项",
+    "createdOn": "创建于",
+    "expiresOn": "过期于",
+    "timeRemaining": "剩余时间",
+    "totalVotes": "总票数",
+    "connecting": "连接中...",
+    "realtimeActive": "实时活动",
+    "offline": "离线",
+    "total": "总计",
+    "share": {
+      "title": "分享此投票",
+      "description": "邀请其他人参与您的投票",
+      "copyLink": "复制",
+      "copied": "已复制！",
+      "qrCode": "二维码",
+      "showQR": "显示二维码",
+      "hideQR": "隐藏二维码",
+      "generating": "生成中...",
+      "generatingQR": "生成二维码中...",
+      "qrAlt": "投票二维码",
+      "qrDescription": "扫描此二维码访问投票",
+      "copyError": "复制时出错："
+    },
+    "results": {
+      "title": "实时结果",
+      "totalVotes": "总票数"
+    },
+    "time": {
+      "days": "天",
+      "hours": "时",
+      "minutes": "分",
+      "seconds": "秒"
+    }
+  },
+  "language": {
+    "switch": "切换语言",
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "zh": "中文",
+    "ar": "العربية",
+    "ru": "Русский"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "retry": "重试",
+    "back": "返回"
+  }
+}

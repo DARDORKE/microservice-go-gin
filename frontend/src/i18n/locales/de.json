@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "QuickPoll",
+    "subtitle": "Erstellen Sie Echtzeit-Umfragen",
+    "footer": {
+      "description": "Echtzeit-Umfragen",
+      "copyright": "© 2024 QuickPoll. Angetrieben von Go, React und Innovation.",
+      "features": {
+        "realtime": "Echtzeit",
+        "responsive": "Responsive",
+        "secure": "Sicher"
+      }
+    }
+  },
+  "nav": {
+    "createNewPoll": "Neue Umfrage erstellen"
+  },
+  "createPoll": {
+    "title": "Neue Umfrage erstellen",
+    "subtitle": "Erstellen Sie eine interaktive Umfrage in nur wenigen Klicks. Ihre Teilnehmer können in Echtzeit abstimmen.",
+    "form": {
+      "title": {
+        "label": "Umfragetitel",
+        "placeholder": "Geben Sie Ihren Umfragetitel ein...",
+        "required": "Titel ist erforderlich",
+        "minLength": "Der Titel muss mindestens 3 Zeichen enthalten",
+        "maxLength": "Der Titel darf nicht mehr als 255 Zeichen enthalten"
+      },
+      "description": {
+        "label": "Beschreibung (optional)",
+        "placeholder": "Beschreiben Sie Ihre Umfrage in wenigen Worten...",
+        "maxLength": "Die Beschreibung darf nicht mehr als 500 Zeichen enthalten",
+        "counter": "Zeichen"
+      },
+      "options": {
+        "label": "Umfrageoptionen",
+        "subtitle": "(min 2, max 10)",
+        "placeholder": "Option",
+        "add": "Option hinzufügen",
+        "minOptions": "Mindestens 2 Optionen erforderlich",
+        "maxOptions": "Maximal 10 Optionen erlaubt",
+        "maxLength": "Eine Option darf nicht mehr als 255 Zeichen enthalten",
+        "duplicates": "Doppelte Optionen sind nicht erlaubt"
+      },
+      "expiration": {
+        "label": "Ablauf in Minuten (optional)",
+        "placeholder": "60",
+        "help": "Leer lassen für eine Umfrage ohne Ablaufdatum (max 1 Woche = 10080 Minuten)",
+        "min": "Die Ablaufdauer muss mindestens 1 Minute betragen",
+        "max": "Die Ablaufdauer darf 1 Woche nicht überschreiten (10080 Minuten)"
+      },
+      "submit": "Umfrage erstellen",
+      "creating": "Wird erstellt...",
+      "error": "Fehler beim Erstellen der Umfrage"
+    }
+  },
+  "poll": {
+    "loading": "Umfrage wird geladen...",
+    "loadingError": "Fehler beim Laden der Umfrage",
+    "notFound": "Umfrage nicht gefunden",
+    "notFoundDescription": "Diese Umfrage existiert nicht oder ist nicht mehr verfügbar.",
+    "expired": "Diese Umfrage ist abgelaufen",
+    "votes": "Stimmen",
+    "vote": "Stimme",
+    "submit": "Jetzt abstimmen",
+    "voting": "Abstimmung läuft...",
+    "success": "Ihre Stimme wurde erfolgreich registriert!",
+    "error": "Fehler bei der Abstimmung",
+    "alreadyVoted": "Sie haben bereits in dieser Umfrage abgestimmt",
+    "selectOption": "Bitte wählen Sie eine Option",
+    "createdOn": "Erstellt am",
+    "expiresOn": "Läuft ab am",
+    "timeRemaining": "Verbleibende Zeit",
+    "totalVotes": "Gesamtstimmen",
+    "connecting": "Verbindung wird hergestellt...",
+    "realtimeActive": "Echtzeit aktiv",
+    "offline": "Offline",
+    "total": "gesamt",
+    "share": {
+      "title": "Diese Umfrage teilen",
+      "description": "Laden Sie andere ein, an Ihrer Umfrage teilzunehmen",
+      "copyLink": "Kopieren",
+      "copied": "Kopiert!",
+      "qrCode": "QR-Code",
+      "showQR": "QR-Code anzeigen",
+      "hideQR": "QR-Code ausblenden",
+      "generating": "Wird generiert...",
+      "generatingQR": "QR-Code wird generiert...",
+      "qrAlt": "Umfrage QR-Code",
+      "qrDescription": "Scannen Sie diesen QR-Code, um auf die Umfrage zuzugreifen",
+      "copyError": "Fehler beim Kopieren:"
+    },
+    "results": {
+      "title": "Echtzeit-Ergebnisse",
+      "totalVotes": "Gesamtstimmen"
+    },
+    "time": {
+      "days": "T",
+      "hours": "h",
+      "minutes": "m",
+      "seconds": "s"
+    }
+  },
+  "language": {
+    "switch": "Sprache wechseln",
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "zh": "中文",
+    "ar": "العربية",
+    "ru": "Русский"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "retry": "Erneut versuchen",
+    "back": "Zurück"
+  }
+}

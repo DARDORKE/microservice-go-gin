@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "QuickPoll",
+    "subtitle": "Crea encuestas en tiempo real",
+    "footer": {
+      "description": "Encuestas en tiempo real",
+      "copyright": "© 2024 QuickPoll. Impulsado por Go, React e innovación.",
+      "features": {
+        "realtime": "Tiempo real",
+        "responsive": "Responsive",
+        "secure": "Seguro"
+      }
+    }
+  },
+  "nav": {
+    "createNewPoll": "Crear nueva encuesta"
+  },
+  "createPoll": {
+    "title": "Crear una nueva encuesta",
+    "subtitle": "Crea una encuesta interactiva en solo unos clics. Tus participantes podrán votar en tiempo real.",
+    "form": {
+      "title": {
+        "label": "Título de la encuesta",
+        "placeholder": "Introduce el título de tu encuesta...",
+        "required": "El título es obligatorio",
+        "minLength": "El título debe contener al menos 3 caracteres",
+        "maxLength": "El título no puede exceder los 255 caracteres"
+      },
+      "description": {
+        "label": "Descripción (opcional)",
+        "placeholder": "Describe tu encuesta en pocas palabras...",
+        "maxLength": "La descripción no puede exceder los 500 caracteres",
+        "counter": "caracteres"
+      },
+      "options": {
+        "label": "Opciones de la encuesta",
+        "subtitle": "(mín 2, máx 10)",
+        "placeholder": "Opción",
+        "add": "Agregar opción",
+        "minOptions": "Se requieren al menos 2 opciones",
+        "maxOptions": "Máximo 10 opciones permitidas",
+        "maxLength": "Una opción no puede exceder los 255 caracteres",
+        "duplicates": "No se permiten opciones duplicadas"
+      },
+      "expiration": {
+        "label": "Expiración en minutos (opcional)",
+        "placeholder": "60",
+        "help": "Deja vacío para una encuesta sin expiración (máx 1 semana = 10080 minutos)",
+        "min": "La duración de expiración debe ser de al menos 1 minuto",
+        "max": "La duración de expiración no puede exceder 1 semana (10080 minutos)"
+      },
+      "submit": "Crear encuesta",
+      "creating": "Creando...",
+      "error": "Error al crear la encuesta"
+    }
+  },
+  "poll": {
+    "loading": "Cargando encuesta...",
+    "loadingError": "Error al cargar la encuesta",
+    "notFound": "Encuesta no encontrada",
+    "notFoundDescription": "Esta encuesta no existe o ya no está disponible.",
+    "expired": "Esta encuesta ha expirado",
+    "votes": "votos",
+    "vote": "voto",
+    "submit": "Votar ahora",
+    "voting": "Votando...",
+    "success": "¡Tu voto ha sido registrado exitosamente!",
+    "error": "Error al votar",
+    "alreadyVoted": "Ya has votado en esta encuesta",
+    "selectOption": "Por favor selecciona una opción",
+    "createdOn": "Creado el",
+    "expiresOn": "Expira el",
+    "timeRemaining": "Tiempo restante",
+    "totalVotes": "Total votos",
+    "connecting": "Conectando...",
+    "realtimeActive": "Tiempo real activo",
+    "offline": "Desconectado",
+    "total": "total",
+    "share": {
+      "title": "Compartir esta encuesta",
+      "description": "Invita a otros a participar en tu encuesta",
+      "copyLink": "Copiar",
+      "copied": "¡Copiado!",
+      "qrCode": "Código QR",
+      "showQR": "Mostrar código QR",
+      "hideQR": "Ocultar código QR",
+      "generating": "Generando...",
+      "generatingQR": "Generando código QR...",
+      "qrAlt": "Código QR de la encuesta",
+      "qrDescription": "Escanea este código QR para acceder a la encuesta",
+      "copyError": "Error al copiar:"
+    },
+    "results": {
+      "title": "Resultados en tiempo real",
+      "totalVotes": "Total de votos"
+    },
+    "time": {
+      "days": "d",
+      "hours": "h",
+      "minutes": "m",
+      "seconds": "s"
+    }
+  },
+  "language": {
+    "switch": "Cambiar idioma",
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "zh": "中文",
+    "ar": "العربية",
+    "ru": "Русский"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "retry": "Reintentar",
+    "back": "Volver"
+  }
+}

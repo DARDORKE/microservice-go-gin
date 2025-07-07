@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "QuickPoll",
+    "subtitle": "Maak realtime polls",
+    "footer": {
+      "description": "Realtime polls",
+      "copyright": "© 2024 QuickPoll. Aangedreven door Go, React en innovatie.",
+      "features": {
+        "realtime": "Realtime",
+        "responsive": "Responsive",
+        "secure": "Veilig"
+      }
+    }
+  },
+  "nav": {
+    "createNewPoll": "Nieuwe poll maken"
+  },
+  "createPoll": {
+    "title": "Maak een nieuwe poll",
+    "subtitle": "Maak een interactieve poll in slechts een paar klikken. Je deelnemers kunnen in realtime stemmen.",
+    "form": {
+      "title": {
+        "label": "Poll titel",
+        "placeholder": "Voer je poll titel in...",
+        "required": "Titel is verplicht",
+        "minLength": "Titel moet minimaal 3 tekens bevatten",
+        "maxLength": "Titel mag niet meer dan 255 tekens bevatten"
+      },
+      "description": {
+        "label": "Beschrijving (optioneel)",
+        "placeholder": "Beschrijf je poll in enkele woorden...",
+        "maxLength": "Beschrijving mag niet meer dan 500 tekens bevatten",
+        "counter": "tekens"
+      },
+      "options": {
+        "label": "Poll opties",
+        "subtitle": "(min 2, max 10)",
+        "placeholder": "Optie",
+        "add": "Optie toevoegen",
+        "minOptions": "Minimaal 2 opties zijn vereist",
+        "maxOptions": "Maximaal 10 opties toegestaan",
+        "maxLength": "Een optie mag niet meer dan 255 tekens bevatten",
+        "duplicates": "Dubbele opties zijn niet toegestaan"
+      },
+      "expiration": {
+        "label": "Vervaldatum in minuten (optioneel)",
+        "placeholder": "60",
+        "help": "Laat leeg voor een poll zonder vervaldatum (max 1 week = 10080 minuten)",
+        "min": "Vervalduur moet minimaal 1 minuut zijn",
+        "max": "Vervalduur mag niet meer dan 1 week zijn (10080 minuten)"
+      },
+      "submit": "Poll maken",
+      "creating": "Aan het maken...",
+      "error": "Fout bij het maken van poll"
+    }
+  },
+  "poll": {
+    "loading": "Poll laden...",
+    "loadingError": "Fout bij het laden van poll",
+    "notFound": "Poll niet gevonden",
+    "notFoundDescription": "Deze poll bestaat niet of is niet meer beschikbaar.",
+    "expired": "Deze poll is verlopen",
+    "votes": "stemmen",
+    "vote": "stem",
+    "submit": "Nu stemmen",
+    "voting": "Aan het stemmen...",
+    "success": "Je stem is succesvol geregistreerd!",
+    "error": "Fout bij het stemmen",
+    "alreadyVoted": "Je hebt al gestemd in deze poll",
+    "selectOption": "Selecteer een optie",
+    "createdOn": "Gemaakt op",
+    "expiresOn": "Verloopt op",
+    "timeRemaining": "Resterende tijd",
+    "totalVotes": "Totaal stemmen",
+    "connecting": "Verbinden...",
+    "realtimeActive": "Realtime actief",
+    "offline": "Offline",
+    "total": "totaal",
+    "share": {
+      "title": "Deel deze poll",
+      "description": "Nodig anderen uit om deel te nemen aan je poll",
+      "copyLink": "Kopiëren",
+      "copied": "Gekopieerd!",
+      "qrCode": "QR Code",
+      "showQR": "QR Code tonen",
+      "hideQR": "QR Code verbergen",
+      "generating": "Genereren...",
+      "generatingQR": "QR code genereren...",
+      "qrAlt": "Poll QR Code",
+      "qrDescription": "Scan deze QR code om toegang te krijgen tot de poll",
+      "copyError": "Fout bij kopiëren:"
+    },
+    "results": {
+      "title": "Realtime resultaten",
+      "totalVotes": "Totaal stemmen"
+    },
+    "time": {
+      "days": "d",
+      "hours": "u",
+      "minutes": "m",
+      "seconds": "s"
+    }
+  },
+  "language": {
+    "switch": "Taal wisselen",
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "zh": "中文",
+    "ar": "العربية",
+    "ru": "Русский"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fout",
+    "retry": "Opnieuw proberen",
+    "back": "Terug"
+  }
+}

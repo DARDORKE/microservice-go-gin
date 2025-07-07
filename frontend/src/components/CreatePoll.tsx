@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { pollService } from '../services/api';
 import { CreatePollRequest } from '../types/poll';
 import Loader from './Loader';
@@ -16,6 +17,7 @@ interface CreatePollProps {
 }
 
 const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState(['', '']);
@@ -56,19 +58,19 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
     // Title validation
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      errors.title = 'Le titre est requis';
+      errors.title = t('createPoll.form.title.required');
       isValid = false;
     } else if (trimmedTitle.length < 3) {
-      errors.title = 'Le titre doit contenir au moins 3 caractères';
+      errors.title = t('createPoll.form.title.minLength');
       isValid = false;
     } else if (trimmedTitle.length > 255) {
-      errors.title = 'Le titre ne peut pas dépasser 255 caractères';
+      errors.title = t('createPoll.form.title.maxLength');
       isValid = false;
     }
 
     // Description validation
     if (description.trim().length > 500) {
-      errors.description = 'La description ne peut pas dépasser 500 caractères';
+      errors.description = t('createPoll.form.description.maxLength');
       isValid = false;
     }
 
@@ -77,10 +79,10 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
     const optionErrors: string[] = [];
     
     if (validOptions.length < 2) {
-      errors.general = 'Au moins 2 options sont requises';
+      errors.general = t('createPoll.form.options.minOptions');
       isValid = false;
     } else if (validOptions.length > 10) {
-      errors.general = 'Maximum 10 options autorisées';
+      errors.general = t('createPoll.form.options.maxOptions');
       isValid = false;
     }
 
@@ -88,7 +90,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
     options.forEach((option, index) => {
       const trimmedOption = option.trim();
       if (trimmedOption && trimmedOption.length > 255) {
-        optionErrors[index] = 'Une option ne peut pas dépasser 255 caractères';
+        optionErrors[index] = t('createPoll.form.options.maxLength');
         isValid = false;
       }
     });
@@ -99,7 +101,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
       lowerCaseOptions.indexOf(option) === index
     );
     if (lowerCaseOptions.length !== uniqueOptions.length) {
-      errors.general = 'Les options dupliquées ne sont pas autorisées';
+      errors.general = t('createPoll.form.options.duplicates');
       isValid = false;
     }
 
@@ -111,10 +113,10 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
     if (expiresIn) {
       const expirationValue = parseInt(expiresIn);
       if (isNaN(expirationValue) || expirationValue < 1) {
-        errors.expiresIn = 'La durée d\'expiration doit être d\'au moins 1 minute';
+        errors.expiresIn = t('createPoll.form.expiration.min');
         isValid = false;
       } else if (expirationValue > 10080) {
-        errors.expiresIn = 'La durée d\'expiration ne peut pas dépasser 1 semaine (10080 minutes)';
+        errors.expiresIn = t('createPoll.form.expiration.max');
         isValid = false;
       }
     }
@@ -156,7 +158,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
           setError(backendError);
         }
       } else {
-        setError('Erreur lors de la création du sondage');
+        setError(t('createPoll.form.error'));
       }
     } finally {
       setIsLoading(false);
@@ -173,10 +175,10 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
           </svg>
         </div>
         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
-          Créer un nouveau sondage
+          {t('createPoll.title')}
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Créez un sondage interactif en quelques clics. Vos participants pourront voter en temps réel.
+          {t('createPoll.subtitle')}
         </p>
       </div>
 
@@ -189,7 +191,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
               <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2h4a1 1 0 0 1 0 2h-1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6H3a1 1 0 0 1 0-2h4z" />
               </svg>
-              Titre du sondage *
+              {t('createPoll.form.title.label')} *
             </label>
             <input
               type="text"
@@ -202,7 +204,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
                 }
               }}
               className={`input-modern ${validationErrors.title ? 'border-red-500 bg-red-50' : ''}`}
-              placeholder="Entrez le titre de votre sondage..."
+              placeholder={t('createPoll.form.title.placeholder')}
               minLength={3}
               maxLength={255}
             />
@@ -222,7 +224,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
               <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
               </svg>
-              Description (optionnelle)
+              {t('createPoll.form.description.label')}
             </label>
             <textarea
               id="description"
@@ -234,12 +236,12 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
                 }
               }}
               className={`textarea-modern h-24 ${validationErrors.description ? 'border-red-500 bg-red-50' : ''}`}
-              placeholder="Décrivez votre sondage en quelques mots..."
+              placeholder={t('createPoll.form.description.placeholder')}
               maxLength={500}
             />
             <div className="flex justify-between items-center">
               <span className={`text-xs ${description.length > 450 ? 'text-amber-500' : description.length > 500 ? 'text-red-500' : 'text-gray-400'}`}>
-                {description.length}/500 caractères
+                {description.length}/500 {t('createPoll.form.description.counter')}
               </span>
             </div>
             {validationErrors.description && (
@@ -258,7 +260,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
               <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              Options du sondage * (min 2, max 10)
+              {t('createPoll.form.options.label')} * {t('createPoll.form.options.subtitle')}
             </label>
             
             <div className="bg-gray-50/80 backdrop-blur-sm rounded-xl p-4 space-y-3 border border-gray-200">
@@ -270,7 +272,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
                       value={option}
                       onChange={(e) => updateOption(index, e.target.value)}
                       className={`input-modern ${validationErrors.options?.[index] ? 'border-red-500 bg-red-50' : ''}`}
-                      placeholder={`Option ${index + 1}`}
+                      placeholder={`${t('createPoll.form.options.placeholder')} ${index + 1}`}
                       maxLength={255}
                     />
                     {validationErrors.options?.[index] && (
@@ -305,7 +307,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Ajouter une option
+                  {t('createPoll.form.options.add')}
                 </button>
               )}
             </div>
@@ -317,7 +319,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
               <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Expiration en minutes (optionnel)
+              {t('createPoll.form.expiration.label')}
             </label>
             <input
               type="number"
@@ -335,7 +337,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
               max="10080"
             />
             <p className="text-xs text-gray-500">
-              Laissez vide pour un sondage sans expiration (max 1 semaine = 10080 minutes)
+              {t('createPoll.form.expiration.help')}
             </p>
             {validationErrors.expiresIn && (
               <p className="text-red-500 text-sm flex items-center gap-1">
@@ -380,14 +382,14 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
               {isLoading ? (
                 <>
                   <Loader size="small" inline />
-                  <span>Création en cours...</span>
+                  <span>{t('createPoll.form.creating')}</span>
                 </>
               ) : (
                 <>
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  <span>Créer le sondage</span>
+                  <span>{t('createPoll.form.submit')}</span>
                 </>
               )}
             </button>

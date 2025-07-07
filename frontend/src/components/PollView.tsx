@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Poll, PollOption } from '../types/poll';
 import { pollService } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
@@ -10,6 +11,7 @@ interface PollViewProps {
 }
 
 const PollView: React.FC<PollViewProps> = ({ pollId }) => {
+  const { t, i18n } = useTranslation();
   const [poll, setPoll] = useState<Poll | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>('');
   const [hasVoted, setHasVoted] = useState(false);
@@ -33,14 +35,14 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
         const userHasVoted = await pollService.hasVoted(pollId);
         setHasVoted(userHasVoted);
       } catch (err) {
-        setError('Erreur lors du chargement du sondage');
+        setError(t('poll.loadingError'));
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchPoll();
-  }, [pollId]);
+  }, [pollId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updatePollVotes = useCallback((message: any) => {
     if (message.type === 'vote_update') {
@@ -87,22 +89,22 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
         if (days > 0) {
-          setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+          setTimeLeft(`${days}${t('poll.time.days')} ${hours}${t('poll.time.hours')} ${minutes}${t('poll.time.minutes')} ${seconds}${t('poll.time.seconds')}`);
         } else if (hours > 0) {
-          setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+          setTimeLeft(`${hours}${t('poll.time.hours')} ${minutes}${t('poll.time.minutes')} ${seconds}${t('poll.time.seconds')}`);
         } else if (minutes > 0) {
-          setTimeLeft(`${minutes}m ${seconds}s`);
+          setTimeLeft(`${minutes}${t('poll.time.minutes')} ${seconds}${t('poll.time.seconds')}`);
         } else {
-          setTimeLeft(`${seconds}s`);
+          setTimeLeft(`${seconds}${t('poll.time.seconds')}`);
         }
       } else {
-        setTimeLeft('Expiré');
+        setTimeLeft(t('poll.expired'));
         clearInterval(interval);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [poll?.expires_at]);
+  }, [poll?.expires_at, t]);
 
   const handleVote = async () => {
     if (!selectedOption || !poll) return;
@@ -114,7 +116,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
       await pollService.vote(pollId, { option_ids: [selectedOption] });
       setHasVoted(true);
     } catch (err) {
-      setError('Erreur lors du vote');
+      setError(t('poll.error'));
     } finally {
       setIsVoting(false);
     }
@@ -122,7 +124,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
 
   const isActive = (poll: Poll) => {
     if (!poll.expires_at) return true;
-    if (timeLeft === 'Expiré') return false;
+    if (timeLeft === t('poll.expired')) return false;
     return new Date(poll.expires_at) > new Date();
   };
 
@@ -135,7 +137,19 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('fr-FR');
+    const localeMap: { [key: string]: string } = {
+      'en': 'en-US',
+      'es': 'es-ES',
+      'nl': 'nl-NL',
+      'de': 'de-DE',
+      'it': 'it-IT',
+      'pt': 'pt-BR',
+      'zh': 'zh-CN',
+      'ar': 'ar-SA',
+      'ru': 'ru-RU',
+      'fr': 'fr-FR'
+    };
+    return new Date(dateString).toLocaleString(localeMap[i18n.language] || 'fr-FR');
   };
 
   const getShareUrl = () => {
@@ -148,14 +162,14 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Erreur lors de la copie:', err);
+      console.error(t('poll.share.copyError'), err);
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-64">
-        <Loader text="Chargement du sondage..." />
+        <Loader text={t('poll.loading')} />
       </div>
     );
   }
@@ -168,7 +182,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">Erreur de chargement</h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('common.error')}</h3>
         <p className="text-gray-600">{error}</p>
       </div>
     );
@@ -182,8 +196,8 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">Sondage introuvable</h3>
-        <p className="text-gray-600">Ce sondage n'existe pas ou n'est plus disponible.</p>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">{t('poll.notFound')}</h3>
+        <p className="text-gray-600">{t('poll.notFoundDescription')}</p>
       </div>
     );
   }
@@ -224,7 +238,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                 </svg>
               </div>
               <div>
-                <p className="text-xs text-gray-500 font-medium">Créé le</p>
+                <p className="text-xs text-gray-500 font-medium">{t('poll.createdOn')}</p>
                 <p className="text-sm font-semibold text-gray-800">{formatDate(poll.created_at)}</p>
               </div>
             </div>
@@ -237,7 +251,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-medium">Expire le</p>
+                  <p className="text-xs text-gray-500 font-medium">{t('poll.expiresOn')}</p>
                   <p className="text-sm font-semibold text-gray-800">{formatDate(poll.expires_at)}</p>
                 </div>
               </div>
@@ -251,9 +265,9 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-medium">Temps restant</p>
-                  <p className={`text-sm font-semibold ${timeLeft === 'Expiré' ? 'text-red-600' : 'text-green-600'}`}>
-                    {timeLeft === 'Expiré' ? 'Expiré' : timeLeft}
+                  <p className="text-xs text-gray-500 font-medium">{t('poll.timeRemaining')}</p>
+                  <p className={`text-sm font-semibold ${timeLeft === t('poll.expired') ? 'text-red-600' : 'text-green-600'}`}>
+                    {timeLeft === t('poll.expired') ? t('poll.expired') : timeLeft}
                   </p>
                 </div>
               </div>
@@ -266,7 +280,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                 </svg>
               </div>
               <div>
-                <p className="text-xs text-gray-500 font-medium">Total votes</p>
+                <p className="text-xs text-gray-500 font-medium">{t('poll.totalVotes')}</p>
                 <p className="text-sm font-semibold text-gray-800">{getTotalVotes(poll)}</p>
               </div>
             </div>
@@ -284,17 +298,17 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
               {isConnecting ? (
                 <>
                   <Loader size="small" inline />
-                  <span>Connexion...</span>
+                  <span>{t('poll.connecting')}</span>
                 </>
               ) : isConnected ? (
                 <>
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>Temps réel actif</span>
+                  <span>{t('poll.realtimeActive')}</span>
                 </>
               ) : (
                 <>
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Hors ligne</span>
+                  <span>{t('poll.offline')}</span>
                 </>
               )}
             </div>
@@ -328,7 +342,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
               </label>
               <div className="flex items-center gap-3">
                 <span className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  {option.vote_count} votes
+                  {option.vote_count} {option.vote_count === 1 ? t('poll.vote') : t('poll.votes')}
                 </span>
               </div>
             </div>
@@ -345,8 +359,8 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                 />
                 {/* Vote count indicator below progress bar */}
                 <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                  <span>{option.vote_count} vote{option.vote_count !== 1 ? 's' : ''}</span>
-                  <span>{getTotalVotes(poll)} total</span>
+                  <span>{option.vote_count} {option.vote_count === 1 ? t('poll.vote') : t('poll.votes')}</span>
+                  <span>{getTotalVotes(poll)} {t('poll.total')}</span>
                 </div>
               </div>
               <div className={`px-4 py-2 rounded-xl shadow-md min-w-[4rem] text-center text-white font-bold text-sm ${
@@ -388,14 +402,14 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             {isVoting ? (
               <>
                 <Loader size="small" inline />
-                <span>Vote en cours...</span>
+                <span>{t('poll.voting')}</span>
               </>
             ) : (
               <>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>Voter maintenant</span>
+                <span>{t('poll.submit')}</span>
               </>
             )}
           </button>
@@ -409,7 +423,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span className="text-lg font-semibold">Votre vote a été enregistré avec succès !</span>
+              <span className="text-lg font-semibold">{t('poll.success')}</span>
             </div>
           </div>
         )}
@@ -422,7 +436,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-lg font-semibold">Ce sondage a expiré</span>
+              <span className="text-lg font-semibold">{t('poll.expired')}</span>
             </div>
           </div>
         )}
@@ -435,9 +449,9 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
             </svg>
-            Partager ce sondage
+            {t('poll.share.title')}
           </h3>
-          <p className="text-gray-600">Invitez d'autres personnes à participer à votre sondage</p>
+          <p className="text-gray-600">{t('poll.share.description')}</p>
         </div>
         
         <div className="space-y-4">
@@ -461,14 +475,14 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  Copié !
+                  {t('poll.share.copied')}
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
-                  Copier
+                  {t('poll.share.copyLink')}
                 </>
               )}
             </button>
@@ -488,14 +502,14 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             {isQRLoading ? (
               <>
                 <Loader size="small" inline />
-                <span>Génération...</span>
+                <span>{t('poll.share.generating')}</span>
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                 </svg>
-                <span>{showQR ? 'Masquer QR Code' : 'Afficher QR Code'}</span>
+                <span>{showQR ? t('poll.share.hideQR') : t('poll.share.showQR')}</span>
               </>
             )}
           </button>
@@ -505,20 +519,20 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           <div className="mt-6 text-center animate-fade-in">
             {isQRLoading ? (
               <div className="py-8">
-                <Loader text="Génération du QR code..." />
+                <Loader text={t('poll.share.generatingQR')} />
               </div>
             ) : (
               <div className="bg-white p-6 rounded-2xl border border-gray-200 inline-block">
                 <img
                   src={pollService.getQRCode(pollId)}
-                  alt="QR Code du sondage"
+                  alt={t('poll.share.qrAlt')}
                   className="w-48 h-48 mx-auto rounded-xl shadow-lg"
                 />
                 <p className="mt-4 text-sm text-gray-600 flex items-center justify-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
-                  Scannez ce QR code pour accéder au sondage
+                  {t('poll.share.qrDescription')}
                 </p>
               </div>
             )}

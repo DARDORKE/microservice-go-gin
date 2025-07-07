@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "QuickPoll",
+    "subtitle": "Crie enquetes em tempo real",
+    "footer": {
+      "description": "Enquetes em tempo real",
+      "copyright": "© 2024 QuickPoll. Desenvolvido com Go, React e inovação.",
+      "features": {
+        "realtime": "Tempo real",
+        "responsive": "Responsivo",
+        "secure": "Seguro"
+      }
+    }
+  },
+  "nav": {
+    "createNewPoll": "Criar nova enquete"
+  },
+  "createPoll": {
+    "title": "Criar uma nova enquete",
+    "subtitle": "Crie uma enquete interativa em apenas alguns cliques. Seus participantes poderão votar em tempo real.",
+    "form": {
+      "title": {
+        "label": "Título da enquete",
+        "placeholder": "Digite o título da sua enquete...",
+        "required": "O título é obrigatório",
+        "minLength": "O título deve conter pelo menos 3 caracteres",
+        "maxLength": "O título não pode exceder 255 caracteres"
+      },
+      "description": {
+        "label": "Descrição (opcional)",
+        "placeholder": "Descreva sua enquete em poucas palavras...",
+        "maxLength": "A descrição não pode exceder 500 caracteres",
+        "counter": "caracteres"
+      },
+      "options": {
+        "label": "Opções da enquete",
+        "subtitle": "(mín 2, máx 10)",
+        "placeholder": "Opção",
+        "add": "Adicionar opção",
+        "minOptions": "São necessárias pelo menos 2 opções",
+        "maxOptions": "Máximo de 10 opções permitidas",
+        "maxLength": "Uma opção não pode exceder 255 caracteres",
+        "duplicates": "Opções duplicadas não são permitidas"
+      },
+      "expiration": {
+        "label": "Expiração em minutos (opcional)",
+        "placeholder": "60",
+        "help": "Deixe vazio para uma enquete sem expiração (máx 1 semana = 10080 minutos)",
+        "min": "A duração de expiração deve ser de pelo menos 1 minuto",
+        "max": "A duração de expiração não pode exceder 1 semana (10080 minutos)"
+      },
+      "submit": "Criar enquete",
+      "creating": "Criando...",
+      "error": "Erro ao criar enquete"
+    }
+  },
+  "poll": {
+    "loading": "Carregando enquete...",
+    "loadingError": "Erro ao carregar enquete",
+    "notFound": "Enquete não encontrada",
+    "notFoundDescription": "Esta enquete não existe ou não está mais disponível.",
+    "expired": "Esta enquete expirou",
+    "votes": "votos",
+    "vote": "voto",
+    "submit": "Votar agora",
+    "voting": "Votando...",
+    "success": "Seu voto foi registrado com sucesso!",
+    "error": "Erro ao votar",
+    "alreadyVoted": "Você já votou nesta enquete",
+    "selectOption": "Por favor, selecione uma opção",
+    "createdOn": "Criado em",
+    "expiresOn": "Expira em",
+    "timeRemaining": "Tempo restante",
+    "totalVotes": "Total de votos",
+    "connecting": "Conectando...",
+    "realtimeActive": "Tempo real ativo",
+    "offline": "Desconectado",
+    "total": "total",
+    "share": {
+      "title": "Compartilhar esta enquete",
+      "description": "Convide outros para participar da sua enquete",
+      "copyLink": "Copiar",
+      "copied": "Copiado!",
+      "qrCode": "Código QR",
+      "showQR": "Mostrar código QR",
+      "hideQR": "Ocultar código QR",
+      "generating": "Gerando...",
+      "generatingQR": "Gerando código QR...",
+      "qrAlt": "Código QR da enquete",
+      "qrDescription": "Escaneie este código QR para acessar a enquete",
+      "copyError": "Erro ao copiar:"
+    },
+    "results": {
+      "title": "Resultados em tempo real",
+      "totalVotes": "Total de votos"
+    },
+    "time": {
+      "days": "d",
+      "hours": "h",
+      "minutes": "m",
+      "seconds": "s"
+    }
+  },
+  "language": {
+    "switch": "Mudar idioma",
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "zh": "中文",
+    "ar": "العربية",
+    "ru": "Русский"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "retry": "Tentar novamente",
+    "back": "Voltar"
+  }
+}

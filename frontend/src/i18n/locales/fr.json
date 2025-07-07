@@ -1,0 +1,123 @@
+{
+  "app": {
+    "title": "QuickPoll",
+    "subtitle": "Créez des sondages en temps réel",
+    "footer": {
+      "description": "Des sondages en temps réel",
+      "copyright": "© 2024 QuickPoll. Propulsé par Go, React et l'innovation.",
+      "features": {
+        "realtime": "Temps réel",
+        "responsive": "Responsive",
+        "secure": "Sécurisé"
+      }
+    }
+  },
+  "nav": {
+    "createNewPoll": "Créer un nouveau sondage"
+  },
+  "createPoll": {
+    "title": "Créer un nouveau sondage",
+    "subtitle": "Créez un sondage interactif en quelques clics. Vos participants pourront voter en temps réel.",
+    "form": {
+      "title": {
+        "label": "Titre du sondage",
+        "placeholder": "Entrez le titre de votre sondage...",
+        "required": "Le titre est requis",
+        "minLength": "Le titre doit contenir au moins 3 caractères",
+        "maxLength": "Le titre ne peut pas dépasser 255 caractères"
+      },
+      "description": {
+        "label": "Description (optionnelle)",
+        "placeholder": "Décrivez votre sondage en quelques mots...",
+        "maxLength": "La description ne peut pas dépasser 500 caractères",
+        "counter": "caractères"
+      },
+      "options": {
+        "label": "Options du sondage",
+        "subtitle": "(min 2, max 10)",
+        "placeholder": "Option",
+        "add": "Ajouter une option",
+        "minOptions": "Au moins 2 options sont requises",
+        "maxOptions": "Maximum 10 options autorisées",
+        "maxLength": "Une option ne peut pas dépasser 255 caractères",
+        "duplicates": "Les options dupliquées ne sont pas autorisées"
+      },
+      "expiration": {
+        "label": "Expiration en minutes (optionnel)",
+        "placeholder": "60",
+        "help": "Laissez vide pour un sondage sans expiration (max 1 semaine = 10080 minutes)",
+        "min": "La durée d'expiration doit être d'au moins 1 minute",
+        "max": "La durée d'expiration ne peut pas dépasser 1 semaine (10080 minutes)"
+      },
+      "submit": "Créer le sondage",
+      "creating": "Création en cours...",
+      "error": "Erreur lors de la création du sondage"
+    }
+  },
+  "poll": {
+    "loading": "Chargement du sondage...",
+    "loadingError": "Erreur lors du chargement du sondage",
+    "notFound": "Sondage introuvable",
+    "notFoundDescription": "Ce sondage n'existe pas ou n'est plus disponible.",
+    "expired": "Ce sondage a expiré",
+    "votes": "votes",
+    "vote": "vote",
+    "submit": "Voter maintenant",
+    "voting": "Vote en cours...",
+    "success": "Votre vote a été enregistré avec succès !",
+    "error": "Erreur lors du vote",
+    "alreadyVoted": "Vous avez déjà voté dans ce sondage",
+    "selectOption": "Veuillez sélectionner une option",
+    "createdOn": "Créé le",
+    "expiresOn": "Expire le",
+    "timeRemaining": "Temps restant",
+    "totalVotes": "Total votes",
+    "connecting": "Connexion...",
+    "realtimeActive": "Temps réel actif",
+    "offline": "Hors ligne",
+    "total": "total",
+    "share": {
+      "title": "Partager ce sondage",
+      "description": "Invitez d'autres personnes à participer à votre sondage",
+      "copyLink": "Copier",
+      "copied": "Copié !",
+      "qrCode": "Code QR",
+      "showQR": "Afficher QR Code",
+      "hideQR": "Masquer QR Code",
+      "generating": "Génération...",
+      "generatingQR": "Génération du QR code...",
+      "qrAlt": "QR Code du sondage",
+      "qrDescription": "Scannez ce QR code pour accéder au sondage",
+      "copyError": "Erreur lors de la copie:"
+    },
+    "results": {
+      "title": "Résultats en temps réel",
+      "totalVotes": "Total des votes"
+    },
+    "time": {
+      "days": "j",
+      "hours": "h",
+      "minutes": "m",
+      "seconds": "s"
+    }
+  },
+  "language": {
+    "switch": "Changer de langue",
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "pt": "Português",
+    "zh": "中文",
+    "ar": "العربية",
+    "ru": "Русский"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "retry": "Réessayer",
+    "back": "Retour"
+  }
+}

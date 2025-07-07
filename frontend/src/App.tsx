@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import CreatePoll from './components/CreatePoll';
 import PollView from './components/PollView';
+import LanguageSwitch from './components/LanguageSwitch';
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [currentView, setCurrentView] = useState<'create' | 'view'>('create');
   const [currentPollId, setCurrentPollId] = useState<string>('');
 
@@ -28,6 +31,11 @@ function App() {
     setCurrentPollId('');
   };
 
+  // Apply RTL for Arabic
+  useEffect(() => {
+    document.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  }, [i18n.language]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -41,13 +49,18 @@ function App() {
       <header className="relative z-10 bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col items-center space-y-6">
+            {/* Language Switch */}
+            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-[100]">
+              <LanguageSwitch />
+            </div>
+            
             {/* Logo and Title */}
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-black gradient-text text-shadow-lg mb-2">
-                QuickPoll
+                {t('app.title')}
               </h1>
               <p className="text-gray-600 text-lg font-medium">
-                Créez des sondages en temps réel
+                {t('app.subtitle')}
               </p>
             </div>
 
@@ -61,7 +74,7 @@ function App() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Créer un nouveau sondage
+                  {t('nav.createNewPoll')}
                 </button>
               </nav>
             )}
@@ -94,11 +107,11 @@ function App() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <span className="text-lg font-semibold">QuickPoll</span>
+              <span className="text-lg font-semibold">{t('app.title')}</span>
             </div>
             <div className="hidden md:block w-px h-6 bg-gray-600"></div>
             <p className="text-gray-300">
-              Des sondages en temps réel
+              {t('app.footer.description')}
             </p>
           </div>
           
@@ -107,25 +120,25 @@ function App() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              Temps réel
+              {t('app.footer.features.realtime')}
             </div>
             <div className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              Responsive
+              {t('app.footer.features.responsive')}
             </div>
             <div className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Sécurisé
+              {t('app.footer.features.secure')}
             </div>
           </div>
           
           <div className="mt-6 pt-4 border-t border-gray-700">
             <p className="text-gray-400 text-sm">
-              © 2024 QuickPoll. Propulsé par Go, React et l'innovation.
+              {t('app.footer.copyright')}
             </p>
           </div>
         </div>
