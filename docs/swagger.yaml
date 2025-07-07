@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /
 definitions:
   entity.Option:
     properties:
@@ -130,6 +130,7 @@ info:
     name: API Support
     url: https://quickpoll.example.com
   description: API de création de sondages en temps réel avec Go et Gin Framework
+    - Hot Reload
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

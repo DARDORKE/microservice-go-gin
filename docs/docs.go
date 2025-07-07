@@ -404,10 +404,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "QuickPoll API",
-	Description:      "API de création de sondages en temps réel avec Go et Gin Framework",
+	Description:      "API de création de sondages en temps réel avec Go et Gin Framework - Hot Reload",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

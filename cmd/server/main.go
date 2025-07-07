@@ -23,7 +23,7 @@ import (
 
 // @title           QuickPoll API
 // @version         1.0
-// @description     API de création de sondages en temps réel avec Go et Gin Framework
+// @description     API de création de sondages en temps réel avec Go et Gin Framework - Hot Reload
 // @termsOfService  https://example.com/terms/
 
 // @contact.name   API Support
@@ -34,7 +34,7 @@ import (
 // @license.url   https://opensource.org/licenses/MIT
 
 // @host      localhost:8080
-// @BasePath  /api/v1
+// @BasePath  /
 
 // @securityDefinitions.apikey BearerAuth
 // @in header
