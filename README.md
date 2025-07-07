@@ -70,21 +70,11 @@ cd microservice-go-gin
 make dev-start
 ```
 
-**Avec monitoring (Prometheus + Grafana)**
-```bash
-make dev-monitoring
-```
-
-**Environnement complet (tous les services)**
-```bash
-make dev-full
-```
-
 3. **L'API est maintenant accessible sur**
-- Frontend : http://localhost
-- API: http://localhost/api/v1
-- Swagger: http://localhost/swagger/index.html
-- Metrics: http://localhost/metrics
+- Frontend : http://localhost:3001/
+- API: http://localhost:3001/api/v1
+- Swagger: http://localhost:8080/swagger/index.html#/
+- Metrics: http://localhost:8080/metrics
 - Prometheus: http://localhost:9090 (avec monitoring)
 - Grafana: http://localhost:3000 (admin/admin, avec monitoring)
 
@@ -203,33 +193,6 @@ docker-compose up -d
 make dev-start
 ```
 
-**Avec monitoring (ajoute Prometheus + Grafana)**
-```bash
-docker-compose --profile monitoring up -d
-# ou
-make dev-monitoring
-```
-
-**Environnement complet (tous les services)**
-```bash
-docker-compose --profile full up -d
-# ou
-make dev-full
-```
-
-**Tests d'intégration**
-```bash
-docker-compose --profile test run --rm test
-# ou
-make test-integration
-```
-
-### Build de production
-```bash
-make prod-build
-make prod-docker
-```
-
 ### Variables d'environnement
 ```env
 # Database
@@ -262,8 +225,6 @@ APP_ENVIRONMENT=production
 **Développement**
 ```bash
 make dev-start      # Démarrer services de base
-make dev-monitoring # Démarrer avec monitoring
-make dev-full       # Démarrer tous les services
 make dev-stop       # Arrêter l'environnement
 make dev-restart    # Redémarrer l'environnement
 ```
@@ -305,29 +266,14 @@ func (uc *CreatePollUseCase) Execute(ctx context.Context, input CreatePollInput)
 }
 ```
 
-## 🚀 Déploiement
-
-### Railway.app (Recommandé)
-1. Fork ce repository
-2. Connectez Railway à votre GitHub
-3. Créez un nouveau projet depuis le repo
-4. Railway détectera automatiquement le Dockerfile
-5. Ajoutez MySQL et Redis depuis le marketplace
-6. Configurez les variables d'environnement
-
-### Autres options
-- **Render.com** - Support natif Go
-- **Fly.io** - Déploiement global
-- **Heroku** - Avec buildpack Go
-
 ## 📝 TODO
 
-- [ ] Frontend React interactif
+- [ ] Frontend React interactif ✅
 - [ ] Authentification JWT pour sondages privés
 - [ ] Export CSV/JSON des résultats
 - [ ] Analytics dashboard
-- [ ] Rate limiting par IP
-- [ ] i18n support
+- [ ] Rate limiting par IP ✅
+- [ ] i18n support ✅
 
 ## 🤝 Contribution
 
