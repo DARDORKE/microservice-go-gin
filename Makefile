@@ -23,15 +23,13 @@ help: ## Affiche l'aide
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(YELLOW)%-20s$(NC) %s\n", $$1, $$2}'
 
 # Développement
-dev-start: ## Démarre l'environnement de développement
+dev-start: ## Démarre l'environnement de développement (services de base)
 	@echo "$(GREEN)🚀 Démarrage de l'environnement de développement...$(NC)"
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) up -d mysql redis app
 	@echo "$(GREEN)✅ Environnement démarré!$(NC)"
 	@echo "$(BLUE)API: http://localhost:8080$(NC)"
 	@echo "$(BLUE)Swagger: http://localhost:8080/swagger/index.html$(NC)"
-	@echo "$(BLUE)Prometheus: http://localhost:9090$(NC)"
-	@echo "$(BLUE)Grafana: http://localhost:3000 (admin/admin)$(NC)"
-	@echo "$(BLUE)Jaeger: http://localhost:16686$(NC)"
+	@echo "$(YELLOW)Pour le monitoring: make dev-monitoring$(NC)"
 
 dev-stop: ## Arrête l'environnement de développement
 	@echo "$(YELLOW)🔄 Arrêt de l'environnement...$(NC)"
@@ -202,14 +200,32 @@ docs-serve: ## Démarre la documentation
 	@echo "$(BLUE)http://localhost:8080/swagger/index.html$(NC)"
 
 # Monitoring
-monitor-start: ## Démarre le monitoring
+dev-monitoring: ## Démarre l'environnement avec monitoring
+	@echo "$(GREEN)📈 Démarrage avec monitoring...$(NC)"
+	$(DOCKER_COMPOSE) --profile monitoring up -d
+	@echo "$(GREEN)✅ Environnement avec monitoring démarré!$(NC)"
+	@echo "$(BLUE)API: http://localhost:8080$(NC)"
+	@echo "$(BLUE)Swagger: http://localhost:8080/swagger/index.html$(NC)"
+	@echo "$(BLUE)Prometheus: http://localhost:9090$(NC)"
+	@echo "$(BLUE)Grafana: http://localhost:3000 (admin/admin)$(NC)"
+
+dev-full: ## Démarre l'environnement complet (tous services)
+	@echo "$(GREEN)🚀 Démarrage de l'environnement complet...$(NC)"
+	$(DOCKER_COMPOSE) --profile full up -d
+	@echo "$(GREEN)✅ Environnement complet démarré!$(NC)"
+	@echo "$(BLUE)API: http://localhost:8080$(NC)"
+	@echo "$(BLUE)Swagger: http://localhost:8080/swagger/index.html$(NC)"
+	@echo "$(BLUE)Prometheus: http://localhost:9090$(NC)"
+	@echo "$(BLUE)Grafana: http://localhost:3000 (admin/admin)$(NC)"
+
+monitor-start: ## Démarre uniquement le monitoring
 	@echo "$(GREEN)📈 Démarrage du monitoring...$(NC)"
-	$(DOCKER_COMPOSE) up -d prometheus grafana jaeger
+	$(DOCKER_COMPOSE) --profile monitoring up -d prometheus grafana
 	@echo "$(GREEN)✅ Monitoring démarré!$(NC)"
 
 monitor-stop: ## Arrête le monitoring
 	@echo "$(YELLOW)🔄 Arrêt du monitoring...$(NC)"
-	$(DOCKER_COMPOSE) stop prometheus grafana jaeger
+	$(DOCKER_COMPOSE) stop prometheus grafana
 	@echo "$(GREEN)✅ Monitoring arrêté!$(NC)"
 
 # Profiling

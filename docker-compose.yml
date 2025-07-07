@@ -1,5 +1,17 @@
 version: '3.8'
 
+# Utilisation des profils:
+# - Défaut (base): mysql, redis, app
+# - Profil monitoring: ajoute prometheus et grafana
+# - Profil test: ajoute le service test
+# - Profil full: inclut tous les services
+#
+# Commandes:
+# - docker-compose up -d                    # Services de base
+# - docker-compose --profile monitoring up -d  # Avec monitoring
+# - docker-compose --profile full up -d        # Tous les services
+# - docker-compose --profile test run test     # Tests
+
 services:
   # Base de données MySQL
   mysql:
@@ -96,8 +108,11 @@ services:
       - app
     networks:
       - microservice_network
+    profiles:
+      - monitoring
+      - full
 
-  # Grafana pour les dashboards (optionnel - peut être retiré)
+  # Grafana pour les dashboards (optionnel)
   grafana:
     image: grafana/grafana:latest
     container_name: quickpoll_grafana
@@ -116,6 +131,7 @@ services:
     networks:
       - microservice_network
     profiles:
+      - full
       - monitoring
 
   # Tests
@@ -145,6 +161,7 @@ services:
       - microservice_network
     profiles:
       - test
+      - full
 
 volumes:
   mysql_data:

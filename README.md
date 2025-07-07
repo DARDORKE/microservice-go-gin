@@ -64,14 +64,28 @@ cd microservice-go-gin
 ```
 
 2. **Démarrez l'environnement de développement**
+
+**Services de base uniquement (recommandé pour débuter)**
 ```bash
 make dev-start
+```
+
+**Avec monitoring (Prometheus + Grafana)**
+```bash
+make dev-monitoring
+```
+
+**Environnement complet (tous les services)**
+```bash
+make dev-full
 ```
 
 3. **L'API est maintenant accessible sur**
 - API: http://localhost:8080
 - Swagger: http://localhost:8080/swagger/index.html
 - Metrics: http://localhost:8080/metrics
+- Prometheus: http://localhost:9090 (avec monitoring)
+- Grafana: http://localhost:3000 (admin/admin, avec monitoring)
 
 ## 📡 API Endpoints
 
@@ -177,6 +191,38 @@ make test-coverage
 
 ## 🐳 Docker
 
+### Environnements de développement
+
+Le projet utilise Docker Compose avec un système de profils pour différents environnements :
+
+**Services de base (MySQL + Redis + App)**
+```bash
+docker-compose up -d
+# ou
+make dev-start
+```
+
+**Avec monitoring (ajoute Prometheus + Grafana)**
+```bash
+docker-compose --profile monitoring up -d
+# ou
+make dev-monitoring
+```
+
+**Environnement complet (tous les services)**
+```bash
+docker-compose --profile full up -d
+# ou
+make dev-full
+```
+
+**Tests d'intégration**
+```bash
+docker-compose --profile test run --rm test
+# ou
+make test-integration
+```
+
 ### Build de production
 ```bash
 make prod-build
@@ -211,13 +257,36 @@ APP_ENVIRONMENT=production
 ## 🔧 Développement
 
 ### Commandes utiles
+
+**Développement**
+```bash
+make dev-start      # Démarrer services de base
+make dev-monitoring # Démarrer avec monitoring
+make dev-full       # Démarrer tous les services
+make dev-stop       # Arrêter l'environnement
+make dev-restart    # Redémarrer l'environnement
+```
+
+**Build et exécution**
 ```bash
 make build          # Build l'application
 make run            # Run en local
 make watch          # Hot reload avec Air
+```
+
+**Qualité de code**
+```bash
 make lint           # Lint le code
 make fmt            # Format le code
 make docs           # Générer Swagger docs
+make test           # Lancer tous les tests
+make test-coverage  # Rapport de couverture
+```
+
+**Monitoring**
+```bash
+make monitor-start  # Démarrer uniquement le monitoring
+make monitor-stop   # Arrêter le monitoring
 ```
 
 ### Structure d'un Use Case
