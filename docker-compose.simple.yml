@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # Base de données MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: quickpoll_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quickpoll
+      MYSQL_USER: quickpoll_user
+      MYSQL_PASSWORD: quickpoll_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservice_network
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: quickpoll_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - microservice_network
+
+  # Application Go
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: quickpoll_app
+    environment:
+      DATABASE_HOST: "mysql"
+      DATABASE_PORT: 3306
+      DATABASE_USER: "root"
+      DATABASE_PASSWORD: "root"
+      DATABASE_NAME: "quickpoll"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      JWT_SECRET: "your-secret-key-change-in-production"
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - /app/tmp
+      - ./logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - microservice_network
+
+  # Prometheus pour les métriques (optionnel)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: quickpoll_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - app
+    networks:
+      - microservice_network
+    profiles:
+      - monitoring
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  microservice_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
