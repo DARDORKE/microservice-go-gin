@@ -53,7 +53,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
     const errors: ValidationErrors = {};
     let isValid = true;
 
-    // Validation du titre
+    // Title validation
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       errors.title = 'Le titre est requis';
@@ -66,13 +66,13 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
       isValid = false;
     }
 
-    // Validation de la description
+    // Description validation
     if (description.trim().length > 500) {
       errors.description = 'La description ne peut pas dépasser 500 caractères';
       isValid = false;
     }
 
-    // Validation des options
+    // Options validation
     const validOptions = options.filter(opt => opt.trim() !== '');
     const optionErrors: string[] = [];
     
@@ -84,7 +84,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
       isValid = false;
     }
 
-    // Validation de chaque option
+    // Validate each option
     options.forEach((option, index) => {
       const trimmedOption = option.trim();
       if (trimmedOption && trimmedOption.length > 255) {
@@ -93,7 +93,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
       }
     });
 
-    // Vérification des doublons
+    // Check for duplicates
     const lowerCaseOptions = validOptions.map(opt => opt.trim().toLowerCase());
     const uniqueOptions = lowerCaseOptions.filter((option, index) => 
       lowerCaseOptions.indexOf(option) === index
@@ -107,7 +107,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
       errors.options = optionErrors;
     }
 
-    // Validation de l'expiration
+    // Expiration validation
     if (expiresIn) {
       const expirationValue = parseInt(expiresIn);
       if (isNaN(expirationValue) || expirationValue < 1) {
@@ -147,7 +147,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
       const createdPoll = await pollService.createPoll(pollData);
       onPollCreated(createdPoll.id);
     } catch (err: any) {
-      // Gérer les erreurs de validation du backend
+      // Handle backend validation errors
       if (err.response?.data?.error) {
         const backendError = err.response.data.error;
         if (typeof backendError === 'object') {
@@ -164,137 +164,236 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
   };
 
   return (
-    <div className="create-poll">
-      <div className="create-poll-header">
-        <h2>Créer un nouveau sondage</h2>
+    <div className="w-full max-w-4xl mx-auto animate-fade-in">
+      {/* Header Section */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl mb-4 shadow-lg">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+        </div>
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+          Créer un nouveau sondage
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Créez un sondage interactif en quelques clics. Vos participants pourront voter en temps réel.
+        </p>
       </div>
-      
-      <form onSubmit={handleSubmit} className="create-poll-form">
-        <div className="form-group">
-          <label htmlFor="title">Titre *</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              // Clear title validation error when user starts typing
-              if (validationErrors.title) {
-                setValidationErrors({ ...validationErrors, title: undefined });
-              }
-            }}
-            className={validationErrors.title ? 'error' : ''}
-            required
-            placeholder="Titre du sondage"
-            minLength={3}
-            maxLength={255}
-          />
-          {validationErrors.title && (
-            <span className="error-message">{validationErrors.title}</span>
-          )}
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => {
-              setDescription(e.target.value);
-              // Clear description validation error when user starts typing
-              if (validationErrors.description) {
-                setValidationErrors({ ...validationErrors, description: undefined });
-              }
-            }}
-            className={validationErrors.description ? 'error' : ''}
-            placeholder="Description du sondage"
-            rows={3}
-            maxLength={500}
-          />
-          <small className={`char-count ${
-            description.length > 450 ? 'warning' : ''
-          } ${
-            description.length > 500 ? 'error' : ''
-          }`}>
-            {description.length}/500 caractères
-          </small>
-          {validationErrors.description && (
-            <span className="error-message">{validationErrors.description}</span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label>Options * (min 2, max 10)</label>
-          <div className="options-container">
-            {options.map((option, index) => (
-              <div key={index} className="option-input">
-                <input
-                  type="text"
-                  value={option}
-                  onChange={(e) => updateOption(index, e.target.value)}
-                  className={validationErrors.options?.[index] ? 'error' : ''}
-                  placeholder={`Option ${index + 1}`}
-                  required
-                  maxLength={255}
-                />
-                {options.length > 2 && (
-                  <button type="button" onClick={() => removeOption(index)} className="remove-option">
-                    Supprimer
-                  </button>
-                )}
-                {validationErrors.options?.[index] && (
-                  <span className="error-message">{validationErrors.options[index]}</span>
-                )}
-              </div>
-            ))}
-            {options.length < 10 && (
-              <button type="button" onClick={addOption} className="add-option-btn">
-                Ajouter une option
-              </button>
+      {/* Main Form Card */}
+      <div className="glass-card p-6 md:p-8 shadow-2xl">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Title Field */}
+          <div className="space-y-2">
+            <label htmlFor="title" className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2h4a1 1 0 0 1 0 2h-1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6H3a1 1 0 0 1 0-2h4z" />
+              </svg>
+              Titre du sondage *
+            </label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (validationErrors.title) {
+                  setValidationErrors({ ...validationErrors, title: undefined });
+                }
+              }}
+              className={`input-modern ${validationErrors.title ? 'border-red-500 bg-red-50' : ''}`}
+              placeholder="Entrez le titre de votre sondage..."
+              minLength={3}
+              maxLength={255}
+            />
+            {validationErrors.title && (
+              <p className="text-red-500 text-sm flex items-center gap-1">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {validationErrors.title}
+              </p>
             )}
           </div>
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="expiresIn">Expiration en minutes (optionnel)</label>
-          <input
-            type="number"
-            id="expiresIn"
-            value={expiresIn}
-            onChange={(e) => {
-              setExpiresIn(e.target.value);
-              // Clear expiration validation error when user starts typing
-              if (validationErrors.expiresIn) {
-                setValidationErrors({ ...validationErrors, expiresIn: undefined });
-              }
-            }}
-            className={validationErrors.expiresIn ? 'error' : ''}
-            placeholder="60"
-            min="1"
-            max="10080"
-          />
-          <small>Laissez vide pour un sondage sans expiration (max 1 semaine)</small>
-          {validationErrors.expiresIn && (
-            <span className="error-message">{validationErrors.expiresIn}</span>
-          )}
-        </div>
-
-        {validationErrors.general && (
-          <div className="error-message general-error">{validationErrors.general}</div>
-        )}
-        {error && <div className="error-message general-error">{error}</div>}
-
-        <button type="submit" disabled={isLoading} className="submit-btn">
-          {isLoading ? (
-            <div className="btn-loader">
-              <Loader size="small" inline />
-              Création en cours...
+          {/* Description Field */}
+          <div className="space-y-2">
+            <label htmlFor="description" className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+              </svg>
+              Description (optionnelle)
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                if (validationErrors.description) {
+                  setValidationErrors({ ...validationErrors, description: undefined });
+                }
+              }}
+              className={`textarea-modern h-24 ${validationErrors.description ? 'border-red-500 bg-red-50' : ''}`}
+              placeholder="Décrivez votre sondage en quelques mots..."
+              maxLength={500}
+            />
+            <div className="flex justify-between items-center">
+              <span className={`text-xs ${description.length > 450 ? 'text-amber-500' : description.length > 500 ? 'text-red-500' : 'text-gray-400'}`}>
+                {description.length}/500 caractères
+              </span>
             </div>
-          ) : (
-            'Créer le sondage'
+            {validationErrors.description && (
+              <p className="text-red-500 text-sm flex items-center gap-1">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {validationErrors.description}
+              </p>
+            )}
+          </div>
+
+          {/* Options Section */}
+          <div className="space-y-4">
+            <label className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Options du sondage * (min 2, max 10)
+            </label>
+            
+            <div className="bg-gray-50/80 backdrop-blur-sm rounded-xl p-4 space-y-3 border border-gray-200">
+              {options.map((option, index) => (
+                <div key={index} className="flex gap-3 items-start animate-slide-in-left" style={{ animationDelay: `${index * 100}ms` }}>
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={option}
+                      onChange={(e) => updateOption(index, e.target.value)}
+                      className={`input-modern ${validationErrors.options?.[index] ? 'border-red-500 bg-red-50' : ''}`}
+                      placeholder={`Option ${index + 1}`}
+                      maxLength={255}
+                    />
+                    {validationErrors.options?.[index] && (
+                      <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        {validationErrors.options[index]}
+                      </p>
+                    )}
+                  </div>
+                  {options.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => removeOption(index)}
+                      className="btn-animated flex-shrink-0 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+              
+              {options.length < 10 && (
+                <button
+                  type="button"
+                  onClick={addOption}
+                  className="btn-animated w-full bg-gradient-to-r from-secondary-500 to-secondary-600 text-white py-3 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Ajouter une option
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Expiration Field */}
+          <div className="space-y-2">
+            <label htmlFor="expiresIn" className="block text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Expiration en minutes (optionnel)
+            </label>
+            <input
+              type="number"
+              id="expiresIn"
+              value={expiresIn}
+              onChange={(e) => {
+                setExpiresIn(e.target.value);
+                if (validationErrors.expiresIn) {
+                  setValidationErrors({ ...validationErrors, expiresIn: undefined });
+                }
+              }}
+              className={`input-modern ${validationErrors.expiresIn ? 'border-red-500 bg-red-50' : ''}`}
+              placeholder="60"
+              min="1"
+              max="10080"
+            />
+            <p className="text-xs text-gray-500">
+              Laissez vide pour un sondage sans expiration (max 1 semaine = 10080 minutes)
+            </p>
+            {validationErrors.expiresIn && (
+              <p className="text-red-500 text-sm flex items-center gap-1">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {validationErrors.expiresIn}
+              </p>
+            )}
+          </div>
+
+          {/* Error Messages */}
+          {validationErrors.general && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 text-red-700">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {validationErrors.general}
+              </div>
+            </div>
           )}
-        </button>
-      </form>
+          
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <div className="flex items-center gap-2 text-red-700">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {error}
+              </div>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="btn-animated w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 px-6 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+            >
+              {isLoading ? (
+                <>
+                  <Loader size="small" inline />
+                  <span>Création en cours...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Créer le sondage</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

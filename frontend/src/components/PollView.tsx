@@ -29,7 +29,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
         const pollData = await pollService.getPoll(pollId);
         setPoll(pollData);
         
-        // Vérifier si l'utilisateur a déjà voté
+        // Check if user has already voted
         const userHasVoted = await pollService.hasVoted(pollId);
         setHasVoted(userHasVoted);
       } catch (err) {
@@ -68,7 +68,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
     }
   }, [lastMessage, updatePollVotes]);
 
-  // Compte à rebours pour l'expiration
+  // Countdown for expiration
   useEffect(() => {
     if (!poll?.expires_at) {
       setTimeLeft('');
@@ -153,65 +153,168 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
   };
 
   if (isLoading) {
-    return <Loader text="Chargement du sondage..." />;
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <Loader text="Chargement du sondage..." />
+      </div>
+    );
   }
 
   if (error && !poll) {
-    return <div className="error">{error}</div>;
+    return (
+      <div className="glass-card p-8 text-center">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Erreur de chargement</h3>
+        <p className="text-gray-600">{error}</p>
+      </div>
+    );
   }
 
   if (!poll) {
-    return <div className="error">Sondage introuvable</div>;
+    return (
+      <div className="glass-card p-8 text-center">
+        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800 mb-2">Sondage introuvable</h3>
+        <p className="text-gray-600">Ce sondage n'existe pas ou n'est plus disponible.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="poll-view">
-      <div className="poll-header">
-        <div className="poll-header-gradient">
-          <h2>{poll.title}</h2>
-          {poll.description && <p className="description">{poll.description}</p>}
+    <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in">
+      {/* Poll Header */}
+      <div className="glass-card overflow-hidden shadow-2xl">
+        <div className="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white p-6 md:p-8">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-shadow">
+                {poll.title}
+              </h2>
+              {poll.description && (
+                <p className="text-blue-100 text-lg leading-relaxed">
+                  {poll.description}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="poll-meta">
-          <div className="poll-meta-item">
-            <span>📅 Créé le: {formatDate(poll.created_at)}</span>
-          </div>
-          {poll.expires_at && (
-            <div className="poll-meta-item">
-              <span>📅 Expire le: {formatDate(poll.expires_at)}</span>
+        
+        {/* Poll Meta Information */}
+        <div className="bg-gray-50/80 backdrop-blur-sm p-4 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 font-medium">Créé le</p>
+                <p className="text-sm font-semibold text-gray-800">{formatDate(poll.created_at)}</p>
+              </div>
             </div>
-          )}
-          {timeLeft && (
-            <div className="poll-meta-item">
-              <span className={`countdown ${timeLeft === 'Expiré' ? 'expired' : ''}`}>
-                {timeLeft === 'Expiré' ? '⏰ Expiré' : `⏱️ ${timeLeft}`}
-              </span>
+
+            {poll.expires_at && (
+              <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg">
+                <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Expire le</p>
+                  <p className="text-sm font-semibold text-gray-800">{formatDate(poll.expires_at)}</p>
+                </div>
+              </div>
+            )}
+
+            {timeLeft && (
+              <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg">
+                <div className={`w-8 h-8 ${timeLeft === 'Expiré' ? 'bg-red-100' : 'bg-green-100'} rounded-lg flex items-center justify-center`}>
+                  <svg className={`w-4 h-4 ${timeLeft === 'Expiré' ? 'text-red-600' : 'text-green-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">Temps restant</p>
+                  <p className={`text-sm font-semibold ${timeLeft === 'Expiré' ? 'text-red-600' : 'text-green-600'}`}>
+                    {timeLeft === 'Expiré' ? 'Expiré' : timeLeft}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 p-3 bg-white/70 rounded-lg">
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 font-medium">Total votes</p>
+                <p className="text-sm font-semibold text-gray-800">{getTotalVotes(poll)}</p>
+              </div>
             </div>
-          )}
-          <div className="poll-meta-item">
-            <span>📊 Total des votes: {getTotalVotes(poll)}</span>
           </div>
-          <div className="poll-meta-item">
-            <span className={`connection-status ${isConnected ? 'connected' : isConnecting ? 'connecting' : 'disconnected'}`}>
+
+          {/* Connection Status */}
+          <div className="mt-4 flex justify-center">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
+              isConnected 
+                ? 'bg-green-100 text-green-700' 
+                : isConnecting 
+                ? 'bg-yellow-100 text-yellow-700' 
+                : 'bg-red-100 text-red-700'
+            }`}>
               {isConnecting ? (
                 <>
                   <Loader size="small" inline />
-                  Connexion...
+                  <span>Connexion...</span>
                 </>
               ) : isConnected ? (
-                '🟢 Temps réel'
+                <>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Temps réel actif</span>
+                </>
               ) : (
-                '🔴 Hors ligne'
+                <>
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <span>Hors ligne</span>
+                </>
               )}
-            </span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="poll-options">
-        {poll.options.map((option: PollOption) => (
-          <div key={option.id} className={`poll-option ${selectedOption === option.id ? 'selected' : ''}`}>
-            <div className="option-header">
-              <label>
+      {/* Poll Options */}
+      <div className="space-y-4">
+        {poll.options.map((option: PollOption, index: number) => (
+          <div 
+            key={option.id} 
+            className={`glass-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer animate-slide-in-up ${
+              selectedOption === option.id ? 'ring-2 ring-primary-500 bg-primary-50/50' : ''
+            }`}
+            style={{ animationDelay: `${index * 100}ms` }}
+            onClick={() => !hasVoted && isActive(poll) && setSelectedOption(option.id)}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <label className="flex items-center gap-4 cursor-pointer flex-1">
                 <input
                   type="radio"
                   name="poll-option"
@@ -219,116 +322,207 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
                   checked={selectedOption === option.id}
                   onChange={(e) => setSelectedOption(e.target.value)}
                   disabled={hasVoted || !isActive(poll)}
+                  className="w-5 h-5 text-primary-600 focus:ring-primary-500"
                 />
-                {option.text}
+                <span className="text-lg font-medium text-gray-800">{option.text}</span>
               </label>
-              <span className="vote-count">{option.vote_count} votes</span>
+              <div className="flex items-center gap-3">
+                <span className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  {option.vote_count} votes
+                </span>
+              </div>
             </div>
-            <div className="vote-bar">
-              <div className="progress-container">
+            
+            {/* Progress Bar */}
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
                 <Line
                   percent={parseFloat(getPercentage(option.vote_count, getTotalVotes(poll)))}
-                  strokeWidth={4}
-                  strokeColor="#0ea5e9"
-                  trailWidth={4}
+                  strokeWidth={6}
+                  strokeColor="url(#gradient)"
+                  trailWidth={6}
                   trailColor="#e5e7eb"
+                  strokeLinecap="round"
                 />
+                <svg width="0" height="0">
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#0ea5e9" />
+                      <stop offset="100%" stopColor="#10b981" />
+                    </linearGradient>
+                  </defs>
+                </svg>
               </div>
-              <span className="percentage-badge">
-                {getPercentage(option.vote_count, getTotalVotes(poll))}%
-              </span>
+              <div className="bg-white border border-gray-200 px-3 py-1 rounded-lg shadow-sm">
+                <span className="text-sm font-bold text-gray-800">
+                  {getPercentage(option.vote_count, getTotalVotes(poll))}%
+                </span>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {error && <div className="error">{error}</div>}
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="flex items-center gap-2 text-red-700">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {error}
+          </div>
+        </div>
+      )}
 
-      <div className="poll-actions">
+      {/* Vote Actions */}
+      <div className="glass-card p-6 text-center">
         {!hasVoted && isActive(poll) && (
           <button
             onClick={handleVote}
             disabled={!selectedOption || isVoting}
-            className="vote-button"
+            className="btn-animated bg-gradient-to-r from-secondary-500 to-secondary-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 mx-auto"
           >
             {isVoting ? (
-              <div className="btn-loader">
+              <>
                 <Loader size="small" inline />
-                Vote en cours...
-              </div>
+                <span>Vote en cours...</span>
+              </>
             ) : (
-              'Voter'
+              <>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Voter maintenant</span>
+              </>
             )}
           </button>
         )}
         
         {hasVoted && (
-          <div className="vote-success">✅ Votre vote a été enregistré</div>
+          <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+            <div className="flex items-center justify-center gap-3 text-green-700">
+              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span className="text-lg font-semibold">Votre vote a été enregistré avec succès !</span>
+            </div>
+          </div>
         )}
 
         {!isActive(poll) && (
-          <div className="poll-expired">⏰ Ce sondage a expiré</div>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+            <div className="flex items-center justify-center gap-3 text-red-700">
+              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span className="text-lg font-semibold">Ce sondage a expiré</span>
+            </div>
+          </div>
         )}
       </div>
 
-      <div className="share-section">
-        <h3>🚀 Partager ce sondage</h3>
+      {/* Share Section */}
+      <div className="glass-card p-6">
+        <div className="text-center mb-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+            <svg className="w-6 h-6 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            </svg>
+            Partager ce sondage
+          </h3>
+          <p className="text-gray-600">Invitez d'autres personnes à participer à votre sondage</p>
+        </div>
         
-        <div className="share-link">
-          <input
-            type="text"
-            value={getShareUrl()}
-            readOnly
-            className="share-url-input"
-          />
+        <div className="space-y-4">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={getShareUrl()}
+              readOnly
+              className="input-modern flex-1 font-mono text-sm"
+            />
+            <button
+              onClick={copyShareUrl}
+              className={`btn-animated px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
+                copySuccess 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-500 hover:bg-gray-600 text-white'
+              }`}
+            >
+              {copySuccess ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Copié !
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copier
+                </>
+              )}
+            </button>
+          </div>
+
           <button
-            onClick={copyShareUrl}
-            className={`copy-button ${copySuccess ? 'success' : ''}`}
+            onClick={() => {
+              if (!showQR) {
+                setIsQRLoading(true);
+                setTimeout(() => setIsQRLoading(false), 500);
+              }
+              setShowQR(!showQR);
+            }}
+            className="btn-animated w-full bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+            disabled={isQRLoading}
           >
-            {copySuccess ? '✅ Copié' : '📋 Copier'}
+            {isQRLoading ? (
+              <>
+                <Loader size="small" inline />
+                <span>Génération...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+                <span>{showQR ? 'Masquer QR Code' : 'Afficher QR Code'}</span>
+              </>
+            )}
           </button>
         </div>
 
-        <button
-          onClick={() => {
-            if (!showQR) {
-              setIsQRLoading(true);
-              setTimeout(() => setIsQRLoading(false), 500);
-            }
-            setShowQR(!showQR);
-          }}
-          className="qr-button"
-          disabled={isQRLoading}
-        >
-          {isQRLoading ? (
-            <div className="btn-loader">
-              <Loader size="small" inline />
-              Génération...
-            </div>
-          ) : (
-            showQR ? 'Masquer QR' : '📱 Afficher QR Code'
-          )}
-        </button>
+        {showQR && (
+          <div className="mt-6 text-center animate-fade-in">
+            {isQRLoading ? (
+              <div className="py-8">
+                <Loader text="Génération du QR code..." />
+              </div>
+            ) : (
+              <div className="bg-white p-6 rounded-2xl border border-gray-200 inline-block">
+                <img
+                  src={pollService.getQRCode(pollId)}
+                  alt="QR Code du sondage"
+                  className="w-48 h-48 mx-auto rounded-xl shadow-lg"
+                />
+                <p className="mt-4 text-sm text-gray-600 flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  Scannez ce QR code pour accéder au sondage
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-
-      {showQR && (
-        <div className="qr-code-container">
-          {isQRLoading ? (
-            <div className="qr-loading">
-              <Loader text="Génération du QR code..." />
-            </div>
-          ) : (
-            <>
-              <img
-                src={pollService.getQRCode(pollId)}
-                alt="QR Code du sondage"
-                className="qr-code"
-              />
-              <p>📱 Scannez ce QR code pour accéder au sondage</p>
-            </>
-          )}
-        </div>
-      )}
     </div>
   );
 };

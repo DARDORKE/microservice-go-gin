@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { WebSocketMessage } from '../types/poll';
 import config from '../config/environment';
 
@@ -11,7 +11,7 @@ export const useWebSocket = (pollId: string) => {
   const reconnectAttemptsRef = useRef(0);
   const maxReconnectAttempts = 5;
 
-  const connectWebSocket = () => {
+  const connectWebSocket = useCallback(() => {
     if (!pollId) return;
 
     const wsUrl = `${config.wsBaseUrl}/ws/polls/${pollId}`;
@@ -59,7 +59,7 @@ export const useWebSocket = (pollId: string) => {
       setIsConnected(false);
       setIsConnecting(false);
     };
-  };
+  }, [pollId]);
 
   useEffect(() => {
     connectWebSocket();
@@ -72,7 +72,7 @@ export const useWebSocket = (pollId: string) => {
         ws.current.close(1000); // Normal closure
       }
     };
-  }, [pollId]);
+  }, [connectWebSocket]);
 
   return { isConnected, lastMessage, isConnecting };
 };
