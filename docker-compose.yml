@@ -4,20 +4,19 @@ services:
   # Base de données MySQL
   mysql:
     image: mysql:8.0
-    container_name: microservice_mysql
+    container_name: quickpoll_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: microservice
-      MYSQL_USER: microservice_user
-      MYSQL_PASSWORD: microservice_password
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quickpoll
+      MYSQL_USER: quickpoll_user
+      MYSQL_PASSWORD: quickpoll_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,7 +26,7 @@ services:
   # Cache Redis
   redis:
     image: redis:7-alpine
-    container_name: microservice_redis
+    container_name: quickpoll_redis
     ports:
       - "6379:6379"
     volumes:
@@ -46,7 +45,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: microservice_app
+    container_name: quickpoll_app
     environment:
       SERVER_PORT: 8080
       SERVER_HOST: "0.0.0.0"
@@ -126,7 +125,7 @@ services:
       - "16686:16686"
       - "14268:14268"
     environment:
-      COLLECTOR_OTLP_ENABLED: true
+      COLLECTOR_OTLP_ENABLED: "true"
     networks:
       - microservice_network
 

@@ -11,14 +11,8 @@ import (
 	"time"
 
 	"microservice-go-gin/internal/config"
-	"microservice-go-gin/internal/delivery/http/handler"
-	"microservice-go-gin/internal/delivery/http/middleware"
 	"microservice-go-gin/internal/delivery/http/route"
-	"microservice-go-gin/internal/infrastructure/cache"
 	"microservice-go-gin/internal/infrastructure/database"
-	"microservice-go-gin/internal/infrastructure/logger"
-	"microservice-go-gin/internal/infrastructure/metrics"
-	"microservice-go-gin/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,14 +20,14 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title           Microservice Go API
+// @title           QuickPoll API
 // @version         1.0
-// @description     Un microservice haute performance développé en Go avec Gin Framework
+// @description     API de création de sondages en temps réel avec Go et Gin Framework
 // @termsOfService  https://example.com/terms/
 
-// @contact.name   Kévy DARDOR
-// @contact.url    https://kevy-dardor.com
-// @contact.email  kevy.dardor@example.com
+// @contact.name   API Support
+// @contact.url    https://quickpoll.example.com
+// @contact.email  support@quickpoll.example.com
 
 // @license.name  MIT
 // @license.url   https://opensource.org/licenses/MIT
@@ -53,39 +47,21 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	// Initialiser le logger
-	logger := logger.NewLogger(cfg)
-	logger.Info("Starting microservice-go-gin server...")
-
-	// Initialiser les métriques Prometheus
-	metrics.InitMetrics()
+	log.Println("Starting QuickPoll API server...")
 
 	// Initialiser la base de données
-	db, err := database.NewDatabase(cfg)
+	db, err := database.NewConnection(&cfg.Database)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("Failed to connect to database: %v", err))
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
 	// Exécuter les migrations
-	if err := database.RunMigrations(db); err != nil {
-		logger.Fatal(fmt.Sprintf("Failed to run migrations: %v", err))
+	if err := database.Migrate(db); err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
 	}
-
-	// Initialiser Redis
-	redisClient, err := cache.NewRedisClient(cfg)
-	if err != nil {
-		logger.Fatal(fmt.Sprintf("Failed to connect to Redis: %v", err))
-	}
-
-	// Initialiser les use cases
-	userUseCase := usecase.NewUserUseCase(db, redisClient, logger)
-	authUseCase := usecase.NewAuthUseCase(db, redisClient, logger, cfg)
-
-	// Initialiser les handlers
-	handlers := handler.NewHandlers(userUseCase, authUseCase, logger)
 
 	// Configurer Gin
-	if cfg.Server.Mode == "release" {
+	if cfg.App.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -93,37 +69,45 @@ func main() {
 	r := gin.New()
 
 	// Middlewares globaux
-	r.Use(middleware.Logger(logger))
-	r.Use(middleware.Recovery(logger))
-	r.Use(middleware.CORS())
-	r.Use(middleware.RequestID())
-	r.Use(middleware.Metrics())
-	r.Use(middleware.RateLimiter(redisClient))
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
 
 	// Routes de monitoring
-	r.GET("/health", handlers.HealthCheck)
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// Documentation Swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Routes API
-	route.SetupRoutes(r, handlers, cfg)
+	baseURL := fmt.Sprintf("http://localhost:%d", cfg.Server.Port)
+	route.SetupRoutes(r, db, baseURL)
 
 	// Créer le serveur HTTP
 	srv := &http.Server{
-		Addr:           fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
+		Addr:           fmt.Sprintf(":%d", cfg.Server.Port),
 		Handler:        r,
-		ReadTimeout:    cfg.Server.Timeout,
-		WriteTimeout:   cfg.Server.Timeout,
+		ReadTimeout:    cfg.Server.ReadTimeout,
+		WriteTimeout:   cfg.Server.WriteTimeout,
+		IdleTimeout:    cfg.Server.IdleTimeout,
 		MaxHeaderBytes: 1 << 20, // 1MB
 	}
 
 	// Démarrer le serveur dans une goroutine
 	go func() {
-		logger.Info(fmt.Sprintf("Server starting on %s:%d", cfg.Server.Host, cfg.Server.Port))
+		log.Printf("Server starting on port %d", cfg.Server.Port)
+		log.Printf("Swagger documentation: http://localhost:%d/swagger/index.html", cfg.Server.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatal(fmt.Sprintf("Failed to start server: %v", err))
+			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
 
@@ -132,7 +116,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	logger.Info("Server shutting down...")
+	log.Println("Server shutting down...")
 
 	// Graceful shutdown avec timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -140,17 +124,14 @@ func main() {
 
 	// Arrêter le serveur
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Fatal(fmt.Sprintf("Server forced to shutdown: %v", err))
+		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
-	// Fermer les connexions
-	if err := database.Close(db); err != nil {
-		logger.Error(fmt.Sprintf("Failed to close database: %v", err))
+	// Fermer la connexion à la base de données
+	sqlDB, err := db.DB()
+	if err == nil {
+		sqlDB.Close()
 	}
 
-	if err := redisClient.Close(); err != nil {
-		logger.Error(fmt.Sprintf("Failed to close Redis: %v", err))
-	}
-
-	logger.Info("Server exited")
+	log.Println("Server exited")
 }

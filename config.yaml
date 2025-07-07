@@ -1,0 +1,34 @@
+app:
+  name: QuickPoll
+  version: 1.0.0
+  environment: development
+  debug: true
+
+database:
+  host: localhost
+  port: 3306
+  user: root
+  password: root
+  name: quickpoll
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: 1h
+
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 10
+  min_idle_conns: 5
+  max_retries: 3
+
+jwt:
+  secret: quickpoll-secret-key-change-in-production
+  expiration: 24h
+
+server:
+  port: 8080
+  read_timeout: 15s
+  write_timeout: 15s
+  idle_timeout: 60s
