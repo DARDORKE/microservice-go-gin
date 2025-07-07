@@ -16,6 +16,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
   const [isVoting, setIsVoting] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string>('');
+  const [copySuccess, setCopySuccess] = useState(false);
   
   const { isConnected, lastMessage } = useWebSocket(pollId);
 
@@ -130,6 +131,20 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
     return new Date(dateString).toLocaleString('fr-FR');
   };
 
+  const getShareUrl = () => {
+    return `${window.location.origin}?poll=${pollId}`;
+  };
+
+  const copyShareUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(getShareUrl());
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Erreur lors de la copie:', err);
+    }
+  };
+
   if (isLoading) {
     return <div className="loading">Chargement...</div>;
   }
@@ -215,17 +230,35 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
           <div className="poll-expired">⏰ Ce sondage a expiré</div>
         )}
 
-        <button
-          onClick={() => setShowQR(!showQR)}
-          className="qr-button"
-        >
-          {showQR ? 'Masquer QR' : 'Afficher QR Code'}
-        </button>
+        <div className="share-section">
+          <h3>Partager ce sondage</h3>
+          
+          <div className="share-link">
+            <input
+              type="text"
+              value={getShareUrl()}
+              readOnly
+              className="share-url-input"
+            />
+            <button
+              onClick={copyShareUrl}
+              className={`copy-button ${copySuccess ? 'success' : ''}`}
+            >
+              {copySuccess ? '✅ Copié' : '📋 Copier'}
+            </button>
+          </div>
+
+          <button
+            onClick={() => setShowQR(!showQR)}
+            className="qr-button"
+          >
+            {showQR ? 'Masquer QR' : 'Afficher QR Code'}
+          </button>
+        </div>
       </div>
 
       {showQR && (
         <div className="qr-code-container">
-          <h3>Partager ce sondage</h3>
           <img
             src={pollService.getQRCode(pollId)}
             alt="QR Code du sondage"

@@ -6,7 +6,6 @@ import PollView from './components/PollView';
 function App() {
   const [currentView, setCurrentView] = useState<'create' | 'view'>('create');
   const [currentPollId, setCurrentPollId] = useState<string>('');
-  const [pollIdInput, setPollIdInput] = useState<string>('');
 
   // Vérifier s'il y a un paramètre poll dans l'URL au chargement
   useEffect(() => {
@@ -25,17 +24,9 @@ function App() {
     setCurrentView('view');
   };
 
-  const handleViewPoll = () => {
-    if (pollIdInput.trim()) {
-      setCurrentPollId(pollIdInput.trim());
-      setCurrentView('view');
-    }
-  };
-
   const handleBackToCreate = () => {
     setCurrentView('create');
     setCurrentPollId('');
-    setPollIdInput('');
   };
 
   return (
@@ -49,17 +40,6 @@ function App() {
           >
             Créer un sondage
           </button>
-          <div className="view-poll-section">
-            <input
-              type="text"
-              placeholder="ID du sondage"
-              value={pollIdInput}
-              onChange={(e) => setPollIdInput(e.target.value)}
-            />
-            <button onClick={handleViewPoll}>
-              Voir le sondage
-            </button>
-          </div>
         </nav>
       </header>
 
