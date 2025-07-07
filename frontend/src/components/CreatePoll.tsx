@@ -265,7 +265,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
             
             <div className="bg-gray-50/80 backdrop-blur-sm rounded-xl p-4 space-y-3 border border-gray-200">
               {options.map((option, index) => (
-                <div key={index} className="flex gap-3 items-start animate-slide-in-left" style={{ animationDelay: `${index * 100}ms` }}>
+                <div key={index} className="flex gap-3 items-center">
                   <div className="flex-1">
                     <input
                       type="text"
