@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Line } from 'rc-progress';
 import { Poll, PollOption } from '../types/poll';
 import { pollService } from '../services/api';
 import { useWebSocket } from '../hooks/useWebSocket';
@@ -39,27 +40,31 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
     fetchPoll();
   }, [pollId]);
 
-  useEffect(() => {
-    if (lastMessage && poll) {
-      if (lastMessage.type === 'vote_update') {
-        setPoll(prevPoll => {
-          if (!prevPoll) return null;
-          
-          const updatedOptions = prevPoll.options.map(option => {
-            if (option.id === lastMessage.data.option_id) {
-              return { ...option, vote_count: lastMessage.data.votes || option.vote_count };
-            }
-            return option;
-          });
-
-          return {
-            ...prevPoll,
-            options: updatedOptions,
-          };
+  const updatePollVotes = useCallback((message: any) => {
+    if (message.type === 'vote_update') {
+      setPoll(prevPoll => {
+        if (!prevPoll) return null;
+        
+        const updatedOptions = prevPoll.options.map(option => {
+          if (option.id === message.data.option_id) {
+            return { ...option, vote_count: message.data.votes || option.vote_count };
+          }
+          return option;
         });
-      }
+
+        return {
+          ...prevPoll,
+          options: updatedOptions,
+        };
+      });
     }
-  }, [lastMessage, poll]);
+  }, []);
+
+  useEffect(() => {
+    if (lastMessage) {
+      updatePollVotes(lastMessage);
+    }
+  }, [lastMessage, updatePollVotes]);
 
   // Compte à rebours pour l'expiration
   useEffect(() => {
@@ -160,28 +165,40 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
   return (
     <div className="poll-view">
       <div className="poll-header">
-        <h2>{poll.title}</h2>
-        {poll.description && <p className="description">{poll.description}</p>}
+        <div className="poll-header-gradient">
+          <h2>{poll.title}</h2>
+          {poll.description && <p className="description">{poll.description}</p>}
+        </div>
         <div className="poll-meta">
-          <span>Créé le: {formatDate(poll.created_at)}</span>
+          <div className="poll-meta-item">
+            <span>📅 Créé le: {formatDate(poll.created_at)}</span>
+          </div>
           {poll.expires_at && (
-            <span>Expire le: {formatDate(poll.expires_at)}</span>
+            <div className="poll-meta-item">
+              <span>📅 Expire le: {formatDate(poll.expires_at)}</span>
+            </div>
           )}
           {timeLeft && (
-            <span className={`countdown ${timeLeft === 'Expiré' ? 'expired' : ''}`}>
-              {timeLeft === 'Expiré' ? '⏰ Expiré' : `⏱️ ${timeLeft}`}
-            </span>
+            <div className="poll-meta-item">
+              <span className={`countdown ${timeLeft === 'Expiré' ? 'expired' : ''}`}>
+                {timeLeft === 'Expiré' ? '⏰ Expiré' : `⏱️ ${timeLeft}`}
+              </span>
+            </div>
           )}
-          <span>Total des votes: {getTotalVotes(poll)}</span>
-          <span className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
-            {isConnected ? '🟢 Temps réel' : '🔴 Hors ligne'}
-          </span>
+          <div className="poll-meta-item">
+            <span>📊 Total des votes: {getTotalVotes(poll)}</span>
+          </div>
+          <div className="poll-meta-item">
+            <span className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
+              {isConnected ? '🟢 Temps réel' : '🔴 Hors ligne'}
+            </span>
+          </div>
         </div>
       </div>
 
       <div className="poll-options">
         {poll.options.map((option: PollOption) => (
-          <div key={option.id} className="poll-option">
+          <div key={option.id} className={`poll-option ${selectedOption === option.id ? 'selected' : ''}`}>
             <div className="option-header">
               <label>
                 <input
@@ -197,11 +214,16 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
               <span className="vote-count">{option.vote_count} votes</span>
             </div>
             <div className="vote-bar">
-              <div
-                className="vote-progress"
-                style={{ width: `${getPercentage(option.vote_count, getTotalVotes(poll))}%` }}
-              />
-              <span className="percentage">
+              <div className="progress-container">
+                <Line
+                  percent={parseFloat(getPercentage(option.vote_count, getTotalVotes(poll)))}
+                  strokeWidth={4}
+                  strokeColor="#0ea5e9"
+                  trailWidth={4}
+                  trailColor="#e5e7eb"
+                />
+              </div>
+              <span className="percentage-badge">
                 {getPercentage(option.vote_count, getTotalVotes(poll))}%
               </span>
             </div>
@@ -229,32 +251,32 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
         {!isActive(poll) && (
           <div className="poll-expired">⏰ Ce sondage a expiré</div>
         )}
+      </div>
 
-        <div className="share-section">
-          <h3>Partager ce sondage</h3>
-          
-          <div className="share-link">
-            <input
-              type="text"
-              value={getShareUrl()}
-              readOnly
-              className="share-url-input"
-            />
-            <button
-              onClick={copyShareUrl}
-              className={`copy-button ${copySuccess ? 'success' : ''}`}
-            >
-              {copySuccess ? '✅ Copié' : '📋 Copier'}
-            </button>
-          </div>
-
+      <div className="share-section">
+        <h3>🚀 Partager ce sondage</h3>
+        
+        <div className="share-link">
+          <input
+            type="text"
+            value={getShareUrl()}
+            readOnly
+            className="share-url-input"
+          />
           <button
-            onClick={() => setShowQR(!showQR)}
-            className="qr-button"
+            onClick={copyShareUrl}
+            className={`copy-button ${copySuccess ? 'success' : ''}`}
           >
-            {showQR ? 'Masquer QR' : 'Afficher QR Code'}
+            {copySuccess ? '✅ Copié' : '📋 Copier'}
           </button>
         </div>
+
+        <button
+          onClick={() => setShowQR(!showQR)}
+          className="qr-button"
+        >
+          {showQR ? 'Masquer QR' : '📱 Afficher QR Code'}
+        </button>
       </div>
 
       {showQR && (
@@ -264,7 +286,7 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
             alt="QR Code du sondage"
             className="qr-code"
           />
-          <p>Scannez ce QR code pour accéder au sondage</p>
+          <p>📱 Scannez ce QR code pour accéder au sondage</p>
         </div>
       )}
     </div>

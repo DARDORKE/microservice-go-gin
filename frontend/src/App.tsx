@@ -33,14 +33,16 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>QuickPoll</h1>
-        <nav>
-          <button
-            onClick={handleBackToCreate}
-            className={currentView === 'create' ? 'active' : ''}
-          >
-            Créer un sondage
-          </button>
-        </nav>
+        {currentView === 'view' && (
+          <nav>
+            <button
+              onClick={handleBackToCreate}
+              className="nav-button"
+            >
+              Créer un sondage
+            </button>
+          </nav>
+        )}
       </header>
 
       <main className="App-main">

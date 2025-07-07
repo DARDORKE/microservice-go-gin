@@ -60,9 +60,11 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
 
   return (
     <div className="create-poll">
-      <h2>Créer un nouveau sondage</h2>
+      <div className="create-poll-header">
+        <h2>Créer un nouveau sondage</h2>
+      </div>
       
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="create-poll-form">
         <div className="form-group">
           <label htmlFor="title">Titre</label>
           <input
@@ -88,25 +90,27 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
 
         <div className="form-group">
           <label>Options</label>
-          {options.map((option, index) => (
-            <div key={index} className="option-input">
-              <input
-                type="text"
-                value={option}
-                onChange={(e) => updateOption(index, e.target.value)}
-                placeholder={`Option ${index + 1}`}
-                required
-              />
-              {options.length > 2 && (
-                <button type="button" onClick={() => removeOption(index)}>
-                  Supprimer
-                </button>
-              )}
-            </div>
-          ))}
-          <button type="button" onClick={addOption}>
-            Ajouter une option
-          </button>
+          <div className="options-container">
+            {options.map((option, index) => (
+              <div key={index} className="option-input">
+                <input
+                  type="text"
+                  value={option}
+                  onChange={(e) => updateOption(index, e.target.value)}
+                  placeholder={`Option ${index + 1}`}
+                  required
+                />
+                {options.length > 2 && (
+                  <button type="button" onClick={() => removeOption(index)} className="remove-option">
+                    Supprimer
+                  </button>
+                )}
+              </div>
+            ))}
+            <button type="button" onClick={addOption} className="add-option-btn">
+              Ajouter une option
+            </button>
+          </div>
         </div>
 
         <div className="form-group">
@@ -124,7 +128,7 @@ const CreatePoll: React.FC<CreatePollProps> = ({ onPollCreated }) => {
 
         {error && <div className="error">{error}</div>}
 
-        <button type="submit" disabled={isLoading}>
+        <button type="submit" disabled={isLoading} className="submit-btn">
           {isLoading ? 'Création...' : 'Créer le sondage'}
         </button>
       </form>
