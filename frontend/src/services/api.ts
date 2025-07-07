@@ -26,6 +26,11 @@ export const pollService = {
     await api.post(`/polls/${pollId}/vote`, voteData);
   },
 
+  hasVoted: async (pollId: string): Promise<boolean> => {
+    const response = await api.get(`/polls/${pollId}/has-voted`);
+    return response.data.has_voted;
+  },
+
   getQRCode: (pollId: string): string => {
     return `${config.apiBaseUrl}/api/v1/polls/${pollId}/qr`;
   },

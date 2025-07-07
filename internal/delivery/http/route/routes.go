@@ -25,7 +25,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, baseURL string) {
 
 	// Initialize handlers
 	pollHandler := handler.NewPollHandler(createPollUC, getPollUC)
-	voteHandler := handler.NewVoteHandler(createVoteUC, getPollUC, wsHub)
+	voteHandler := handler.NewVoteHandler(createVoteUC, getPollUC, wsHub, voteRepo)
 	qrHandler := handler.NewQRHandler(baseURL)
 
 	// Start WebSocket hub
@@ -40,6 +40,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB, baseURL string) {
 			polls.POST("", pollHandler.CreatePoll)
 			polls.GET("/:id", pollHandler.GetPoll)
 			polls.POST("/:id/vote", voteHandler.CreateVote)
+			polls.GET("/:id/has-voted", voteHandler.HasVoted)
 			polls.GET("/:id/qr", qrHandler.GenerateQRCode)
 		}
 	}

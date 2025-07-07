@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"microservice-go-gin/internal/delivery/websocket"
+	"microservice-go-gin/internal/domain/repository"
 	"microservice-go-gin/internal/usecase/poll"
 	"microservice-go-gin/internal/usecase/vote"
 )
@@ -24,13 +25,15 @@ type VoteHandler struct {
 	createVoteUC *vote.CreateVoteUseCase
 	getPollUC    *poll.GetPollUseCase
 	wsHub        *websocket.Hub
+	voteRepo     repository.VoteRepository
 }
 
-func NewVoteHandler(createVoteUC *vote.CreateVoteUseCase, getPollUC *poll.GetPollUseCase, wsHub *websocket.Hub) *VoteHandler {
+func NewVoteHandler(createVoteUC *vote.CreateVoteUseCase, getPollUC *poll.GetPollUseCase, wsHub *websocket.Hub, voteRepo repository.VoteRepository) *VoteHandler {
 	return &VoteHandler{
 		createVoteUC: createVoteUC,
 		getPollUC:    getPollUC,
 		wsHub:        wsHub,
+		voteRepo:     voteRepo,
 	}
 }
 
@@ -107,4 +110,36 @@ func (h *VoteHandler) CreateVote(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, VoteResponse{Message: "vote submitted successfully"})
+}
+
+// HasVotedResponse represents the response for checking if user has voted
+type HasVotedResponse struct {
+	HasVoted bool `json:"has_voted" example:"true"`
+}
+
+// HasVoted godoc
+// @Summary Check if user has voted
+// @Description Check if the current user (by IP) has already voted in this poll
+// @Tags votes
+// @Produce json
+// @Param id path string true "Poll ID" format(uuid)
+// @Success 200 {object} HasVotedResponse "Voting status"
+// @Failure 400 {object} map[string]string "Invalid poll ID"
+// @Router /api/v1/polls/{id}/has-voted [get]
+func (h *VoteHandler) HasVoted(c *gin.Context) {
+	pollIDStr := c.Param("id")
+	pollID, err := uuid.Parse(pollIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid poll ID"})
+		return
+	}
+
+	voterID := c.ClientIP()
+	hasVoted, err := h.voteRepo.HasVoted(c.Request.Context(), pollID, voterID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check voting status"})
+		return
+	}
+
+	c.JSON(http.StatusOK, HasVotedResponse{HasVoted: hasVoted})
 }

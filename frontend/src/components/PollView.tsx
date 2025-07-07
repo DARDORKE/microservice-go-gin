@@ -23,6 +23,10 @@ const PollView: React.FC<PollViewProps> = ({ pollId }) => {
       try {
         const pollData = await pollService.getPoll(pollId);
         setPoll(pollData);
+        
+        // Vérifier si l'utilisateur a déjà voté
+        const userHasVoted = await pollService.hasVoted(pollId);
+        setHasVoted(userHasVoted);
       } catch (err) {
         setError('Erreur lors du chargement du sondage');
       } finally {
