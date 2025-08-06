@@ -6,8 +6,9 @@ cmds = [
     "go mod download",
     "go install github.com/swaggo/swag/cmd/swag@latest",
     "swag init -g cmd/server/main.go -o docs/",
-    "go build -o main cmd/server/main.go"
+    "mkdir -p bin",
+    "go build -o bin/main cmd/server/main.go"
 ]
 
 [phases.start]
-cmd = "./main"
+cmd = "./bin/main"
