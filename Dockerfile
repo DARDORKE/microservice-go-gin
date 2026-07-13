@@ -1,5 +1,5 @@
-# Development stage avec Go 1.24
-FROM golang:1.24-alpine
+# Development stage avec Go 1.25
+FROM golang:1.25-alpine
 
 # Install dependencies
 RUN apk add --no-cache git gcc musl-dev make curl
